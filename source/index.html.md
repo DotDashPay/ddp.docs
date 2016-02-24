@@ -1,3 +1,26 @@
+# Errors
+
+### ErrorResponse
+
+An ErrorResponse is a potential response from any request. It is
+  always a completion event; i.e. no other responses will ever come
+  after it.
+
+  Every API function call allows you to specify an error callback
+  which takes `ErrorResponse` as an argument. If this callback is ever
+  invoked, a non-recoverable error has occurred on the
+  @@ddp-hardware-module-name@@. For instance, if you call
+  [Hardware.ListenForPaymentData](#listenforpaymentdata), a payer swipes their
+  magnetic stripe card, and the magnetic card reader fails to extract
+  the payer's card information, an `ErrorResponse` will be returned so
+  that you can alert the payer their card did not read and call
+  [Hardware.ListenForPaymentData](#listenforpaymentdata) again.
+
+Parameter   |   Type   | Required? | Default | Description
+------------- | -------- | --------- | ------- | -----------
+error_code | string | No | None | a semantic code used to identify the error (see [Error      Codes](#error-codes) for a complete list)
+error_message | string | No | None | a human-readable message associated with the error
+
 # Payment
 
 ## PreAuthorize
