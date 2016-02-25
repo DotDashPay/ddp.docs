@@ -154,6 +154,12 @@
 <h1 id="payment">Payment</h1>
 
 <h2 id="preauthorize">PreAuthorize</h2>
+<pre class="highlight objective_c"><code><span class="p">[</span><span class="n">DotDashPayAPI</span><span class="p">.</span><span class="n">payment</span> <span class="nf">preAuthorize</span><span class="p">:</span><span class="n">args</span> <span class="nf">onError</span><span class="p">:</span><span class="o">^</span><span class="p">(</span><span class="n">ErrorResponse</span><span class="o">*</span> <span class="n">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Handle error response
+</span><span class="p">}</span> <span class="nf">onFinishedAuthorization</span><span class="p">:</span><span class="o">^</span><span class="p">(</span><span class="n">FinishedAuthorization</span><span class="o">*</span> <span class="n">response</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Handle response
+</span><span class="p">}];</span>
+</code></pre>
 
 <p>Authorize a payment, i.e. verify that the payment_info is
           accurate and that the desired funds can be withdrawn.</p>
@@ -165,6 +171,11 @@
           <a href="#voidauthorization">Payment.VoidAuthorization</a>.</p>
 
 <h3 id="payment-preauthorizeargs">Payment.PreAuthorizeArgs</h3>
+<pre class="highlight objective_c"><code><span class="n">PreAuthorizeArgs</span><span class="o">*</span> <span class="n">args</span> <span class="o">=</span> <span class="p">[[</span><span class="n">PreAuthorizeArgs</span> <span class="nf">alloc</span><span class="p">]</span> <span class="nf">init</span><span class="p">];</span>
+<span class="n">args</span><span class="p">.</span><span class="n">payid</span> <span class="o">=</span> <span class="s">@"PaymentHardwareFinishedRead.payid"</span><span class="p">;</span>
+<span class="n">args</span><span class="p">.</span><span class="n">dollars</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<span class="n">args</span><span class="p">.</span><span class="n">cents</span> <span class="o">=</span> <span class="mi">28</span><span class="p">;</span>
+</code></pre>
 
 <table><thead>
 <tr>
@@ -199,6 +210,14 @@
 </tbody></table>
 
 <h3 id="payment-finishedauthorization">Payment.FinishedAuthorization</h3>
+<pre class="highlight objective_c"><code><span class="nl">onFinishedAuthorization:</span><span class="o">^</span><span class="p">(</span><span class="n">FinishedAuthorization</span><span class="o">*</span> <span class="n">response</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">NSString</span><span class="o">*</span> <span class="n">payid</span> <span class="o">=</span> <span class="n">response</span><span class="p">.</span><span class="n">payid</span><span class="p">;</span>  <span class="c1">// payid = @"PaymentHardwareFinishedRead.payid"
+</span>    <span class="n">FinishedAuthorization_PaymentStatus</span> <span class="n">status</span> <span class="o">=</span> <span class="n">response</span><span class="p">.</span><span class="n">status</span><span class="p">;</span>  <span class="c1">// status = FinishedAuthorization_PaymentStatus_Success (0)
+</span>    <span class="n">NSString</span><span class="o">*</span> <span class="n">transactionId</span> <span class="o">=</span> <span class="n">response</span><span class="p">.</span><span class="n">transactionId</span><span class="p">;</span>  <span class="c1">// transactionId = @"txn-NG9jR86SC3hjzQHA8h5X3pwz"
+</span>    <span class="n">NSString</span><span class="o">*</span> <span class="n">info</span> <span class="o">=</span> <span class="n">response</span><span class="p">.</span><span class="n">info</span><span class="p">;</span>  <span class="c1">// info = @"Authorization succeeded"
+</span>    <span class="n">NSString</span><span class="o">*</span> <span class="n">customerId</span> <span class="o">=</span> <span class="n">response</span><span class="p">.</span><span class="n">customerId</span><span class="p">;</span>  <span class="c1">// customerId = @"2DAuJMBrMyaC"
+</span><span class="p">}</span>
+</code></pre>
 
 <p>Response when the payment authorization returns from the payment
   processor.</p>
@@ -250,6 +269,14 @@
 </tbody></table>
 
 <h2 id="settle">Settle</h2>
+<pre class="highlight objective_c"><code><span class="p">[</span><span class="n">DotDashPayAPI</span><span class="p">.</span><span class="n">payment</span> <span class="nf">settle</span><span class="p">:</span><span class="n">args</span> <span class="nf">onError</span><span class="p">:</span><span class="o">^</span><span class="p">(</span><span class="n">ErrorResponse</span><span class="o">*</span> <span class="n">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Handle error response
+</span><span class="p">}</span> <span class="nf">onStartedSettlement</span><span class="p">:</span><span class="o">^</span><span class="p">(</span><span class="n">StartedSettlement</span><span class="o">*</span> <span class="n">response</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Handle response
+</span><span class="p">}</span> <span class="nf">onFinishedSettlement</span><span class="p">:</span><span class="o">^</span><span class="p">(</span><span class="n">FinishedSettlement</span><span class="o">*</span> <span class="n">response</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Handle response
+</span><span class="p">}];</span>
+</code></pre>
 
 <p>Settles a payment, which is equivalent to initiating a
           transfer of money from the payer&rsquo;s bank to your bank.</p>
@@ -266,6 +293,11 @@
           voided later on.</p>
 
 <h3 id="payment-settleargs">Payment.SettleArgs</h3>
+<pre class="highlight objective_c"><code><span class="n">SettleArgs</span><span class="o">*</span> <span class="n">args</span> <span class="o">=</span> <span class="p">[[</span><span class="n">SettleArgs</span> <span class="nf">alloc</span><span class="p">]</span> <span class="nf">init</span><span class="p">];</span>
+<span class="n">args</span><span class="p">.</span><span class="n">payid</span> <span class="o">=</span> <span class="s">@"PaymentHardwareFinishedRead.payid"</span><span class="p">;</span>
+<span class="n">args</span><span class="p">.</span><span class="n">dollars</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<span class="n">args</span><span class="p">.</span><span class="n">cents</span> <span class="o">=</span> <span class="mi">28</span><span class="p">;</span>
+</code></pre>
 
 <table><thead>
 <tr>
@@ -300,6 +332,10 @@
 </tbody></table>
 
 <h3 id="payment-startedsettlement">Payment.StartedSettlement</h3>
+<pre class="highlight objective_c"><code><span class="nl">onStartedSettlement:</span><span class="o">^</span><span class="p">(</span><span class="n">StartedSettlement</span><span class="o">*</span> <span class="n">response</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">NSString</span><span class="o">*</span> <span class="n">payid</span> <span class="o">=</span> <span class="n">response</span><span class="p">.</span><span class="n">payid</span><span class="p">;</span>  <span class="c1">// payid = @"PaymentHardwareFinishedRead.payid"
+</span><span class="p">}</span>
+</code></pre>
 
 <p>Response when the settle payment initially starts settling the
   payment with the processor.</p>
@@ -323,6 +359,20 @@
 </tbody></table>
 
 <h3 id="payment-finishedsettlement">Payment.FinishedSettlement</h3>
+<pre class="highlight objective_c"><code><span class="nl">onFinishedSettlement:</span><span class="o">^</span><span class="p">(</span><span class="n">FinishedSettlement</span><span class="o">*</span> <span class="n">response</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">NSString</span><span class="o">*</span> <span class="n">payid</span> <span class="o">=</span> <span class="n">response</span><span class="p">.</span><span class="n">payid</span><span class="p">;</span>  <span class="c1">// payid = @"PaymentHardwareFinishedRead.payid"
+</span>    <span class="n">FinishedSettlement_PaymentStatus</span> <span class="n">status</span> <span class="o">=</span> <span class="n">response</span><span class="p">.</span><span class="n">status</span><span class="p">;</span>  <span class="c1">// status = FinishedSettlement_PaymentStatus_Success (0)
+</span>    <span class="n">NSString</span><span class="o">*</span> <span class="n">transactionId</span> <span class="o">=</span> <span class="n">response</span><span class="p">.</span><span class="n">transactionId</span><span class="p">;</span>  <span class="c1">// transactionId = @"txn-NG9jR86SC3hjzQHA8h5X3pwz"
+</span>    <span class="n">NSString</span><span class="o">*</span> <span class="n">info</span> <span class="o">=</span> <span class="n">response</span><span class="p">.</span><span class="n">info</span><span class="p">;</span>  <span class="c1">// info = @"Settlement finished successfully"
+</span>    <span class="n">NSString</span><span class="o">*</span> <span class="n">customerId</span> <span class="o">=</span> <span class="n">response</span><span class="p">.</span><span class="n">customerId</span><span class="p">;</span>  <span class="c1">// customerId = @"2DAuJMBrMyaC"
+</span>    <span class="n">NSString</span><span class="o">*</span> <span class="n">merchantAccountId</span> <span class="o">=</span> <span class="n">response</span><span class="p">.</span><span class="n">merchantAccountId</span><span class="p">;</span>  <span class="c1">// merchantAccountId = @"merchantAccountNumber"
+</span>    <span class="n">NSString</span><span class="o">*</span> <span class="n">cardType</span> <span class="o">=</span> <span class="n">response</span><span class="p">.</span><span class="n">cardType</span><span class="p">;</span>  <span class="c1">// cardType = @"Visa"
+</span>    <span class="n">NSString</span><span class="o">*</span> <span class="n">last4</span> <span class="o">=</span> <span class="n">response</span><span class="p">.</span><span class="n">last4</span><span class="p">;</span>  <span class="c1">// last4 = @"0000"
+</span>    <span class="n">BOOL</span> <span class="n">commercial</span> <span class="o">=</span> <span class="n">response</span><span class="p">.</span><span class="n">commercial</span><span class="p">;</span>  <span class="c1">// commercial = NO
+</span>    <span class="n">BOOL</span> <span class="n">debit</span> <span class="o">=</span> <span class="n">response</span><span class="p">.</span><span class="n">debit</span><span class="p">;</span>  <span class="c1">// debit = NO
+</span>    <span class="n">NSString</span><span class="o">*</span> <span class="n">createdAt</span> <span class="o">=</span> <span class="n">response</span><span class="p">.</span><span class="n">createdAt</span><span class="p">;</span>  <span class="c1">// createdAt = @"915148799.75"
+</span><span class="p">}</span>
+</code></pre>
 
 <p>Response when the settle payment request returns from the payment
   processor.</p>
@@ -416,6 +466,12 @@
 </tbody></table>
 
 <h2 id="voidauthorization">VoidAuthorization</h2>
+<pre class="highlight objective_c"><code><span class="p">[</span><span class="n">DotDashPayAPI</span><span class="p">.</span><span class="n">payment</span> <span class="nf">voidAuthorization</span><span class="p">:</span><span class="n">args</span> <span class="nf">onError</span><span class="p">:</span><span class="o">^</span><span class="p">(</span><span class="n">ErrorResponse</span><span class="o">*</span> <span class="n">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Handle error response
+</span><span class="p">}</span> <span class="nf">onFinishedAuthorizationVoid</span><span class="p">:</span><span class="o">^</span><span class="p">(</span><span class="n">FinishedAuthorizationVoid</span><span class="o">*</span> <span class="n">response</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Handle response
+</span><span class="p">}];</span>
+</code></pre>
 
 <p>Void an authorized payment. You can only call this function
           for a payment that was successfully authorized via
@@ -427,6 +483,9 @@
           <a href="#refund">Payment.Refund</a> instead.</p>
 
 <h3 id="payment-voidauthorizationargs">Payment.VoidAuthorizationArgs</h3>
+<pre class="highlight objective_c"><code><span class="n">VoidAuthorizationArgs</span><span class="o">*</span> <span class="n">args</span> <span class="o">=</span> <span class="p">[[</span><span class="n">VoidAuthorizationArgs</span> <span class="nf">alloc</span><span class="p">]</span> <span class="nf">init</span><span class="p">];</span>
+<span class="n">args</span><span class="p">.</span><span class="n">transactionId</span> <span class="o">=</span> <span class="s">@"PreAuthorize.transactionId"</span><span class="p">;</span>
+</code></pre>
 
 <table><thead>
 <tr>
@@ -447,6 +506,9 @@
 </tbody></table>
 
 <h3 id="payment-finishedauthorizationvoid">Payment.FinishedAuthorizationVoid</h3>
+<pre class="highlight objective_c"><code><span class="nl">onFinishedAuthorizationVoid:</span><span class="o">^</span><span class="p">(</span><span class="n">FinishedAuthorizationVoid</span><span class="o">*</span> <span class="n">response</span><span class="p">)</span> <span class="p">{</span>
+<span class="p">}</span>
+</code></pre>
 
 <p>Response when an authorization void request is returned from the
   payment processor.</p>
@@ -463,10 +525,16 @@
 </tbody></table>
 
 <h2 id="voidrefund">VoidRefund</h2>
+<pre class="highlight objective_c"><code><span class="p">[</span><span class="n">DotDashPayAPI</span><span class="p">.</span><span class="n">payment</span> <span class="nf">voidRefund</span><span class="p">:</span><span class="n">args</span> <span class="nf">onError</span><span class="p">:</span><span class="o">^</span><span class="p">(</span><span class="n">ErrorResponse</span><span class="o">*</span> <span class="n">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Handle error response
+</span><span class="p">}</span> <span class="nf">onFinishedVoidRefund</span><span class="p">:</span><span class="o">^</span><span class="p">(</span><span class="n">FinishedVoidRefund</span><span class="o">*</span> <span class="n">response</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Handle response
+</span><span class="p">}];</span>
+</code></pre>
 
 <h3 id="payment-voidrefundargs">Payment.VoidRefundArgs</h3>
-
-<p>/</p>
+<pre class="highlight objective_c"><code><span class="n">VoidRefundArgs</span><span class="o">*</span> <span class="n">args</span> <span class="o">=</span> <span class="p">[[</span><span class="n">VoidRefundArgs</span> <span class="nf">alloc</span><span class="p">]</span> <span class="nf">init</span><span class="p">];</span>
+</code></pre>
 
 <table><thead>
 <tr>
@@ -477,49 +545,39 @@
 <th>Description</th>
 </tr>
 </thead><tbody>
+</tbody></table>
+
+<h3 id="payment-finishedvoidrefund">Payment.FinishedVoidRefund</h3>
+<pre class="highlight objective_c"><code><span class="nl">onFinishedVoidRefund:</span><span class="o">^</span><span class="p">(</span><span class="n">FinishedVoidRefund</span><span class="o">*</span> <span class="n">response</span><span class="p">)</span> <span class="p">{</span>
+<span class="p">}</span>
+</code></pre>
+
+<table><thead>
 <tr>
-<td>payid</td>
-<td>string</td>
-<td>Yes</td>
-<td>None</td>
-<td>the id from <a href="#preauthorize">Payment.PreAuthorize</a> used to settle the      payment</td>
+<th>Parameter</th>
+<th>Type</th>
+<th>Required?</th>
+<th>Default</th>
+<th>Description</th>
 </tr>
-<tr>
-<td>status</td>
-<td>PaymentStatus</td>
-<td>Yes</td>
-<td>None</td>
-<td>an enum with values: SUCCESS = 0, FAIL = 1</td>
-</tr>
-<tr>
-<td>transaction_id</td>
-<td>string</td>
-<td>Yes</td>
-<td>None</td>
-<td>a unique id that can be used to identify the authorization</td>
-</tr>
-<tr>
-<td>info</td>
-<td>string</td>
-<td>Yes</td>
-<td>None</td>
-<td>a unique id that can be used to identify the authorization</td>
-</tr>
-<tr>
-<td>customer_id</td>
-<td>string</td>
-<td>No</td>
-<td>None</td>
-<td>a unique id that can be used to identify the authorization</td>
-</tr>
+</thead><tbody>
 </tbody></table>
 
 <h2 id="refund">Refund</h2>
+<pre class="highlight objective_c"><code><span class="p">[</span><span class="n">DotDashPayAPI</span><span class="p">.</span><span class="n">payment</span> <span class="nf">refund</span><span class="p">:</span><span class="n">args</span> <span class="nf">onError</span><span class="p">:</span><span class="o">^</span><span class="p">(</span><span class="n">ErrorResponse</span><span class="o">*</span> <span class="n">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Handle error response
+</span><span class="p">}</span> <span class="nf">onFinishedRefund</span><span class="p">:</span><span class="o">^</span><span class="p">(</span><span class="n">FinishedRefund</span><span class="o">*</span> <span class="n">response</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Handle response
+</span><span class="p">}];</span>
+</code></pre>
 
 <p>Refund a settled payment. You can only call this function
           for a payment that was successfully settled.</p>
 
 <h3 id="payment-refundargs">Payment.RefundArgs</h3>
+<pre class="highlight objective_c"><code><span class="n">RefundArgs</span><span class="o">*</span> <span class="n">args</span> <span class="o">=</span> <span class="p">[[</span><span class="n">RefundArgs</span> <span class="nf">alloc</span><span class="p">]</span> <span class="nf">init</span><span class="p">];</span>
+<span class="n">args</span><span class="p">.</span><span class="n">transactionId</span> <span class="o">=</span> <span class="s">@"Settle.transactionId"</span><span class="p">;</span>
+</code></pre>
 
 <table><thead>
 <tr>
@@ -540,6 +598,12 @@
 </tbody></table>
 
 <h3 id="payment-finishedrefund">Payment.FinishedRefund</h3>
+<pre class="highlight objective_c"><code><span class="nl">onFinishedRefund:</span><span class="o">^</span><span class="p">(</span><span class="n">FinishedRefund</span><span class="o">*</span> <span class="n">response</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">FinishedRefund_PaymentStatus</span> <span class="n">status</span> <span class="o">=</span> <span class="n">response</span><span class="p">.</span><span class="n">status</span><span class="p">;</span>  <span class="c1">// status = FinishedRefund_PaymentStatus_Success (0)
+</span>    <span class="n">NSString</span><span class="o">*</span> <span class="n">transactionId</span> <span class="o">=</span> <span class="n">response</span><span class="p">.</span><span class="n">transactionId</span><span class="p">;</span>  <span class="c1">// transactionId = @"txn-NG9jR86SC3hjzQHA8h5X3pwz"
+</span>    <span class="n">NSString</span><span class="o">*</span> <span class="n">info</span> <span class="o">=</span> <span class="n">response</span><span class="p">.</span><span class="n">info</span><span class="p">;</span>  <span class="c1">// info = @"Refund was successful"
+</span><span class="p">}</span>
+</code></pre>
 
 <p>Response when the payment refund returns from the payment processor.</p>
 
@@ -576,10 +640,16 @@
 </tbody></table>
 
 <h2 id="adjustauthorizationamount">AdjustAuthorizationAmount</h2>
+<pre class="highlight objective_c"><code><span class="p">[</span><span class="n">DotDashPayAPI</span><span class="p">.</span><span class="n">payment</span> <span class="nf">adjustAuthorizationAmount</span><span class="p">:</span><span class="n">args</span> <span class="nf">onError</span><span class="p">:</span><span class="o">^</span><span class="p">(</span><span class="n">ErrorResponse</span><span class="o">*</span> <span class="n">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Handle error response
+</span><span class="p">}</span> <span class="nf">onFinishedAdjustAuthorizationAmount</span><span class="p">:</span><span class="o">^</span><span class="p">(</span><span class="n">FinishedAdjustAuthorizationAmount</span><span class="o">*</span> <span class="n">response</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Handle response
+</span><span class="p">}];</span>
+</code></pre>
 
 <h3 id="payment-adjustauthorizationamountargs">Payment.AdjustAuthorizationAmountArgs</h3>
-
-<p>/</p>
+<pre class="highlight objective_c"><code><span class="n">AdjustAuthorizationAmountArgs</span><span class="o">*</span> <span class="n">args</span> <span class="o">=</span> <span class="p">[[</span><span class="n">AdjustAuthorizationAmountArgs</span> <span class="nf">alloc</span><span class="p">]</span> <span class="nf">init</span><span class="p">];</span>
+</code></pre>
 
 <table><thead>
 <tr>
@@ -590,48 +660,35 @@
 <th>Description</th>
 </tr>
 </thead><tbody>
+</tbody></table>
+
+<h3 id="payment-finishedadjustauthorizationamount">Payment.FinishedAdjustAuthorizationAmount</h3>
+<pre class="highlight objective_c"><code><span class="nl">onFinishedAdjustAuthorizationAmount:</span><span class="o">^</span><span class="p">(</span><span class="n">FinishedAdjustAuthorizationAmount</span><span class="o">*</span> <span class="n">response</span><span class="p">)</span> <span class="p">{</span>
+<span class="p">}</span>
+</code></pre>
+
+<table><thead>
 <tr>
-<td>payid</td>
-<td>string</td>
-<td>Yes</td>
-<td>None</td>
-<td>the id from <a href="#preauthorize">Payment.PreAuthorize</a> used to settle the      payment</td>
+<th>Parameter</th>
+<th>Type</th>
+<th>Required?</th>
+<th>Default</th>
+<th>Description</th>
 </tr>
-<tr>
-<td>status</td>
-<td>PaymentStatus</td>
-<td>Yes</td>
-<td>None</td>
-<td>an enum with values: SUCCESS = 0, FAIL = 1</td>
-</tr>
-<tr>
-<td>transaction_id</td>
-<td>string</td>
-<td>Yes</td>
-<td>None</td>
-<td>a unique id that can be used to identify the authorization</td>
-</tr>
-<tr>
-<td>info</td>
-<td>string</td>
-<td>Yes</td>
-<td>None</td>
-<td>a unique id that can be used to identify the authorization</td>
-</tr>
-<tr>
-<td>customer_id</td>
-<td>string</td>
-<td>No</td>
-<td>None</td>
-<td>a unique id that can be used to identify the authorization</td>
-</tr>
+</thead><tbody>
 </tbody></table>
 
 <h2 id="querycardbalance">QueryCardBalance</h2>
+<pre class="highlight objective_c"><code><span class="p">[</span><span class="n">DotDashPayAPI</span><span class="p">.</span><span class="n">payment</span> <span class="nf">queryCardBalance</span><span class="p">:</span><span class="n">args</span> <span class="nf">onError</span><span class="p">:</span><span class="o">^</span><span class="p">(</span><span class="n">ErrorResponse</span><span class="o">*</span> <span class="n">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Handle error response
+</span><span class="p">}</span> <span class="nf">onCardBalance</span><span class="p">:</span><span class="o">^</span><span class="p">(</span><span class="n">CardBalance</span><span class="o">*</span> <span class="n">response</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Handle response
+</span><span class="p">}];</span>
+</code></pre>
 
 <h3 id="payment-querycardbalanceargs">Payment.QueryCardBalanceArgs</h3>
-
-<p>/</p>
+<pre class="highlight objective_c"><code><span class="n">QueryCardBalanceArgs</span><span class="o">*</span> <span class="n">args</span> <span class="o">=</span> <span class="p">[[</span><span class="n">QueryCardBalanceArgs</span> <span class="nf">alloc</span><span class="p">]</span> <span class="nf">init</span><span class="p">];</span>
+</code></pre>
 
 <table><thead>
 <tr>
@@ -642,48 +699,35 @@
 <th>Description</th>
 </tr>
 </thead><tbody>
+</tbody></table>
+
+<h3 id="payment-cardbalance">Payment.CardBalance</h3>
+<pre class="highlight objective_c"><code><span class="nl">onCardBalance:</span><span class="o">^</span><span class="p">(</span><span class="n">CardBalance</span><span class="o">*</span> <span class="n">response</span><span class="p">)</span> <span class="p">{</span>
+<span class="p">}</span>
+</code></pre>
+
+<table><thead>
 <tr>
-<td>payid</td>
-<td>string</td>
-<td>Yes</td>
-<td>None</td>
-<td>the id from <a href="#preauthorize">Payment.PreAuthorize</a> used to settle the      payment</td>
+<th>Parameter</th>
+<th>Type</th>
+<th>Required?</th>
+<th>Default</th>
+<th>Description</th>
 </tr>
-<tr>
-<td>status</td>
-<td>PaymentStatus</td>
-<td>Yes</td>
-<td>None</td>
-<td>an enum with values: SUCCESS = 0, FAIL = 1</td>
-</tr>
-<tr>
-<td>transaction_id</td>
-<td>string</td>
-<td>Yes</td>
-<td>None</td>
-<td>a unique id that can be used to identify the authorization</td>
-</tr>
-<tr>
-<td>info</td>
-<td>string</td>
-<td>Yes</td>
-<td>None</td>
-<td>a unique id that can be used to identify the authorization</td>
-</tr>
-<tr>
-<td>customer_id</td>
-<td>string</td>
-<td>No</td>
-<td>None</td>
-<td>a unique id that can be used to identify the authorization</td>
-</tr>
+</thead><tbody>
 </tbody></table>
 
 <h2 id="createrecurringpayment">CreateRecurringPayment</h2>
+<pre class="highlight objective_c"><code><span class="p">[</span><span class="n">DotDashPayAPI</span><span class="p">.</span><span class="n">payment</span> <span class="nf">createRecurringPayment</span><span class="p">:</span><span class="n">args</span> <span class="nf">onError</span><span class="p">:</span><span class="o">^</span><span class="p">(</span><span class="n">ErrorResponse</span><span class="o">*</span> <span class="n">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Handle error response
+</span><span class="p">}</span> <span class="nf">onFinishedCreateRecurringPayment</span><span class="p">:</span><span class="o">^</span><span class="p">(</span><span class="n">FinishedCreateRecurringPayment</span><span class="o">*</span> <span class="n">response</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Handle response
+</span><span class="p">}];</span>
+</code></pre>
 
 <h3 id="payment-createrecurringpaymentargs">Payment.CreateRecurringPaymentArgs</h3>
-
-<p>/</p>
+<pre class="highlight objective_c"><code><span class="n">CreateRecurringPaymentArgs</span><span class="o">*</span> <span class="n">args</span> <span class="o">=</span> <span class="p">[[</span><span class="n">CreateRecurringPaymentArgs</span> <span class="nf">alloc</span><span class="p">]</span> <span class="nf">init</span><span class="p">];</span>
+</code></pre>
 
 <table><thead>
 <tr>
@@ -694,48 +738,35 @@
 <th>Description</th>
 </tr>
 </thead><tbody>
+</tbody></table>
+
+<h3 id="payment-finishedcreaterecurringpayment">Payment.FinishedCreateRecurringPayment</h3>
+<pre class="highlight objective_c"><code><span class="nl">onFinishedCreateRecurringPayment:</span><span class="o">^</span><span class="p">(</span><span class="n">FinishedCreateRecurringPayment</span><span class="o">*</span> <span class="n">response</span><span class="p">)</span> <span class="p">{</span>
+<span class="p">}</span>
+</code></pre>
+
+<table><thead>
 <tr>
-<td>payid</td>
-<td>string</td>
-<td>Yes</td>
-<td>None</td>
-<td>the id from <a href="#preauthorize">Payment.PreAuthorize</a> used to settle the      payment</td>
+<th>Parameter</th>
+<th>Type</th>
+<th>Required?</th>
+<th>Default</th>
+<th>Description</th>
 </tr>
-<tr>
-<td>status</td>
-<td>PaymentStatus</td>
-<td>Yes</td>
-<td>None</td>
-<td>an enum with values: SUCCESS = 0, FAIL = 1</td>
-</tr>
-<tr>
-<td>transaction_id</td>
-<td>string</td>
-<td>Yes</td>
-<td>None</td>
-<td>a unique id that can be used to identify the authorization</td>
-</tr>
-<tr>
-<td>info</td>
-<td>string</td>
-<td>Yes</td>
-<td>None</td>
-<td>a unique id that can be used to identify the authorization</td>
-</tr>
-<tr>
-<td>customer_id</td>
-<td>string</td>
-<td>No</td>
-<td>None</td>
-<td>a unique id that can be used to identify the authorization</td>
-</tr>
+</thead><tbody>
 </tbody></table>
 
 <h2 id="configurepaymentprocessor">ConfigurePaymentProcessor</h2>
+<pre class="highlight objective_c"><code><span class="p">[</span><span class="n">DotDashPayAPI</span><span class="p">.</span><span class="n">payment</span> <span class="nf">configurePaymentProcessor</span><span class="p">:</span><span class="n">args</span> <span class="nf">onError</span><span class="p">:</span><span class="o">^</span><span class="p">(</span><span class="n">ErrorResponse</span><span class="o">*</span> <span class="n">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Handle error response
+</span><span class="p">}</span> <span class="nf">onFinishedConfigurePaymentProcessor</span><span class="p">:</span><span class="o">^</span><span class="p">(</span><span class="n">FinishedConfigurePaymentProcessor</span><span class="o">*</span> <span class="n">response</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Handle response
+</span><span class="p">}];</span>
+</code></pre>
 
 <h3 id="payment-configurepaymentprocessorargs">Payment.ConfigurePaymentProcessorArgs</h3>
-
-<p>/</p>
+<pre class="highlight objective_c"><code><span class="n">ConfigurePaymentProcessorArgs</span><span class="o">*</span> <span class="n">args</span> <span class="o">=</span> <span class="p">[[</span><span class="n">ConfigurePaymentProcessorArgs</span> <span class="nf">alloc</span><span class="p">]</span> <span class="nf">init</span><span class="p">];</span>
+</code></pre>
 
 <table><thead>
 <tr>
@@ -746,44 +777,37 @@
 <th>Description</th>
 </tr>
 </thead><tbody>
+</tbody></table>
+
+<h3 id="payment-finishedconfigurepaymentprocessor">Payment.FinishedConfigurePaymentProcessor</h3>
+<pre class="highlight objective_c"><code><span class="nl">onFinishedConfigurePaymentProcessor:</span><span class="o">^</span><span class="p">(</span><span class="n">FinishedConfigurePaymentProcessor</span><span class="o">*</span> <span class="n">response</span><span class="p">)</span> <span class="p">{</span>
+<span class="p">}</span>
+</code></pre>
+
+<table><thead>
 <tr>
-<td>payid</td>
-<td>string</td>
-<td>Yes</td>
-<td>None</td>
-<td>the id from <a href="#preauthorize">Payment.PreAuthorize</a> used to settle the      payment</td>
+<th>Parameter</th>
+<th>Type</th>
+<th>Required?</th>
+<th>Default</th>
+<th>Description</th>
 </tr>
-<tr>
-<td>status</td>
-<td>PaymentStatus</td>
-<td>Yes</td>
-<td>None</td>
-<td>an enum with values: SUCCESS = 0, FAIL = 1</td>
-</tr>
-<tr>
-<td>transaction_id</td>
-<td>string</td>
-<td>Yes</td>
-<td>None</td>
-<td>a unique id that can be used to identify the authorization</td>
-</tr>
-<tr>
-<td>info</td>
-<td>string</td>
-<td>Yes</td>
-<td>None</td>
-<td>a unique id that can be used to identify the authorization</td>
-</tr>
-<tr>
-<td>customer_id</td>
-<td>string</td>
-<td>No</td>
-<td>None</td>
-<td>a unique id that can be used to identify the authorization</td>
-</tr>
+</thead><tbody>
 </tbody></table>
 
 <h2 id="listenforpaymentdatathensettle">ListenForPaymentDataThenSettle</h2>
+<pre class="highlight objective_c"><code><span class="p">[</span><span class="n">DotDashPayAPI</span><span class="p">.</span><span class="n">payment</span> <span class="nf">listenForPaymentDataThenSettle</span><span class="p">:</span><span class="n">args</span> <span class="nf">onError</span><span class="p">:</span><span class="o">^</span><span class="p">(</span><span class="n">ErrorResponse</span><span class="o">*</span> <span class="n">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Handle error response
+</span><span class="p">}</span> <span class="nf">onPaymentHardwareStartedRead</span><span class="p">:</span><span class="o">^</span><span class="p">(</span><span class="n">PaymentHardwareStartedRead</span><span class="o">*</span> <span class="n">response</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Handle response
+</span><span class="p">}</span> <span class="nf">onPaymentHardwareFinishedRead</span><span class="p">:</span><span class="o">^</span><span class="p">(</span><span class="n">PaymentHardwareFinishedRead</span><span class="o">*</span> <span class="n">response</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Handle response
+</span><span class="p">}</span> <span class="nf">onStartedSettlement</span><span class="p">:</span><span class="o">^</span><span class="p">(</span><span class="n">StartedSettlement</span><span class="o">*</span> <span class="n">response</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Handle response
+</span><span class="p">}</span> <span class="nf">onFinishedSettlement</span><span class="p">:</span><span class="o">^</span><span class="p">(</span><span class="n">FinishedSettlement</span><span class="o">*</span> <span class="n">response</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Handle response
+</span><span class="p">}];</span>
+</code></pre>
 
 <p>This is a convenience request that combines
           <a href="#listenforpaymentdata">Hardware.ListenForPaymentData</a> and
@@ -796,6 +820,11 @@
           <a href="#settle">Payment.Settle</a> yourself.</p>
 
 <h3 id="payment-listenforpaymentdatathensettleargs">Payment.ListenForPaymentDataThenSettleArgs</h3>
+<pre class="highlight objective_c"><code><span class="n">ListenForPaymentDataThenSettleArgs</span><span class="o">*</span> <span class="n">args</span> <span class="o">=</span> <span class="p">[[</span><span class="n">ListenForPaymentDataThenSettleArgs</span> <span class="nf">alloc</span><span class="p">]</span> <span class="nf">init</span><span class="p">];</span>
+<span class="n">args</span><span class="p">.</span><span class="n">dollars</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<span class="n">args</span><span class="p">.</span><span class="n">cents</span> <span class="o">=</span> <span class="mi">28</span><span class="p">;</span>
+<span class="n">args</span><span class="p">.</span><span class="n">onlyNewData</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span>
+</code></pre>
 
 <table><thead>
 <tr>
@@ -830,6 +859,9 @@
 </tbody></table>
 
 <h3 id="hardware-paymenthardwarestartedread">Hardware.PaymentHardwareStartedRead</h3>
+<pre class="highlight objective_c"><code><span class="nl">onPaymentHardwareStartedRead:</span><span class="o">^</span><span class="p">(</span><span class="n">PaymentHardwareStartedRead</span><span class="o">*</span> <span class="n">response</span><span class="p">)</span> <span class="p">{</span>
+<span class="p">}</span>
+</code></pre>
 
 <p>Response when the magnetic-stripe reader starts reading data from a
   magnetic stripe card.</p>
@@ -846,6 +878,10 @@
 </tbody></table>
 
 <h3 id="hardware-paymenthardwarefinishedread">Hardware.PaymentHardwareFinishedRead</h3>
+<pre class="highlight objective_c"><code><span class="nl">onPaymentHardwareFinishedRead:</span><span class="o">^</span><span class="p">(</span><span class="n">PaymentHardwareFinishedRead</span><span class="o">*</span> <span class="n">response</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">NSString</span><span class="o">*</span> <span class="n">payid</span> <span class="o">=</span> <span class="n">response</span><span class="p">.</span><span class="n">payid</span><span class="p">;</span>  <span class="c1">// payid = @"PaymentHardwareFinishedRead.payid"
+</span><span class="p">}</span>
+</code></pre>
 
 <p>Response when the magnetic-stripe reader finishes reading data from
   a magnetic stripe card.</p>
@@ -869,6 +905,10 @@
 </tbody></table>
 
 <h3 id="payment-startedsettlement">Payment.StartedSettlement</h3>
+<pre class="highlight objective_c"><code><span class="nl">onStartedSettlement:</span><span class="o">^</span><span class="p">(</span><span class="n">StartedSettlement</span><span class="o">*</span> <span class="n">response</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">NSString</span><span class="o">*</span> <span class="n">payid</span> <span class="o">=</span> <span class="n">response</span><span class="p">.</span><span class="n">payid</span><span class="p">;</span>  <span class="c1">// payid = @"PaymentHardwareFinishedRead.payid"
+</span><span class="p">}</span>
+</code></pre>
 
 <p>Response when the settle payment initially starts settling the
   payment with the processor.</p>
@@ -892,6 +932,20 @@
 </tbody></table>
 
 <h3 id="payment-finishedsettlement">Payment.FinishedSettlement</h3>
+<pre class="highlight objective_c"><code><span class="nl">onFinishedSettlement:</span><span class="o">^</span><span class="p">(</span><span class="n">FinishedSettlement</span><span class="o">*</span> <span class="n">response</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">NSString</span><span class="o">*</span> <span class="n">payid</span> <span class="o">=</span> <span class="n">response</span><span class="p">.</span><span class="n">payid</span><span class="p">;</span>  <span class="c1">// payid = @"PaymentHardwareFinishedRead.payid"
+</span>    <span class="n">FinishedSettlement_PaymentStatus</span> <span class="n">status</span> <span class="o">=</span> <span class="n">response</span><span class="p">.</span><span class="n">status</span><span class="p">;</span>  <span class="c1">// status = FinishedSettlement_PaymentStatus_Success (0)
+</span>    <span class="n">NSString</span><span class="o">*</span> <span class="n">transactionId</span> <span class="o">=</span> <span class="n">response</span><span class="p">.</span><span class="n">transactionId</span><span class="p">;</span>  <span class="c1">// transactionId = @"txn-NG9jR86SC3hjzQHA8h5X3pwz"
+</span>    <span class="n">NSString</span><span class="o">*</span> <span class="n">info</span> <span class="o">=</span> <span class="n">response</span><span class="p">.</span><span class="n">info</span><span class="p">;</span>  <span class="c1">// info = @"Settlement finished successfully"
+</span>    <span class="n">NSString</span><span class="o">*</span> <span class="n">customerId</span> <span class="o">=</span> <span class="n">response</span><span class="p">.</span><span class="n">customerId</span><span class="p">;</span>  <span class="c1">// customerId = @"2DAuJMBrMyaC"
+</span>    <span class="n">NSString</span><span class="o">*</span> <span class="n">merchantAccountId</span> <span class="o">=</span> <span class="n">response</span><span class="p">.</span><span class="n">merchantAccountId</span><span class="p">;</span>  <span class="c1">// merchantAccountId = @"merchantAccountNumber"
+</span>    <span class="n">NSString</span><span class="o">*</span> <span class="n">cardType</span> <span class="o">=</span> <span class="n">response</span><span class="p">.</span><span class="n">cardType</span><span class="p">;</span>  <span class="c1">// cardType = @"Visa"
+</span>    <span class="n">NSString</span><span class="o">*</span> <span class="n">last4</span> <span class="o">=</span> <span class="n">response</span><span class="p">.</span><span class="n">last4</span><span class="p">;</span>  <span class="c1">// last4 = @"0000"
+</span>    <span class="n">BOOL</span> <span class="n">commercial</span> <span class="o">=</span> <span class="n">response</span><span class="p">.</span><span class="n">commercial</span><span class="p">;</span>  <span class="c1">// commercial = NO
+</span>    <span class="n">BOOL</span> <span class="n">debit</span> <span class="o">=</span> <span class="n">response</span><span class="p">.</span><span class="n">debit</span><span class="p">;</span>  <span class="c1">// debit = NO
+</span>    <span class="n">NSString</span><span class="o">*</span> <span class="n">createdAt</span> <span class="o">=</span> <span class="n">response</span><span class="p">.</span><span class="n">createdAt</span><span class="p">;</span>  <span class="c1">// createdAt = @"915148799.75"
+</span><span class="p">}</span>
+</code></pre>
 
 <p>Response when the settle payment request returns from the payment
   processor.</p>
@@ -987,10 +1041,16 @@
 <h1 id="hardware">Hardware</h1>
 
 <h2 id="configurehardware">ConfigureHardware</h2>
+<pre class="highlight objective_c"><code><span class="p">[</span><span class="n">DotDashPayAPI</span><span class="p">.</span><span class="n">hardware</span> <span class="nf">configureHardware</span><span class="p">:</span><span class="n">args</span> <span class="nf">onError</span><span class="p">:</span><span class="o">^</span><span class="p">(</span><span class="n">ErrorResponse</span><span class="o">*</span> <span class="n">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Handle error response
+</span><span class="p">}</span> <span class="nf">onConfigureHardwareFinished</span><span class="p">:</span><span class="o">^</span><span class="p">(</span><span class="n">ConfigureHardwareFinished</span><span class="o">*</span> <span class="n">response</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Handle response
+</span><span class="p">}];</span>
+</code></pre>
 
 <h3 id="hardware-configurehardwareargs">Hardware.ConfigureHardwareArgs</h3>
-
-<p>/</p>
+<pre class="highlight objective_c"><code><span class="n">ConfigureHardwareArgs</span><span class="o">*</span> <span class="n">args</span> <span class="o">=</span> <span class="p">[[</span><span class="n">ConfigureHardwareArgs</span> <span class="nf">alloc</span><span class="p">]</span> <span class="nf">init</span><span class="p">];</span>
+</code></pre>
 
 <table><thead>
 <tr>
@@ -1001,28 +1061,43 @@
 <th>Description</th>
 </tr>
 </thead><tbody>
+</tbody></table>
+
+<h3 id="hardware-configurehardwarefinished">Hardware.ConfigureHardwareFinished</h3>
+<pre class="highlight objective_c"><code><span class="nl">onConfigureHardwareFinished:</span><span class="o">^</span><span class="p">(</span><span class="n">ConfigureHardwareFinished</span><span class="o">*</span> <span class="n">response</span><span class="p">)</span> <span class="p">{</span>
+<span class="p">}</span>
+</code></pre>
+
+<table><thead>
 <tr>
-<td>status</td>
-<td>Status</td>
-<td>Yes</td>
-<td>None</td>
-<td>@define-response(APIConnectionStatus)    APIConnectionStatus contains information related to the status of   the connection between the API and the @@ddp-hardware-module-name@@.</td>
+<th>Parameter</th>
+<th>Type</th>
+<th>Required?</th>
+<th>Default</th>
+<th>Description</th>
 </tr>
-<tr>
-<td>info</td>
-<td>string</td>
-<td>Yes</td>
-<td>None</td>
-<td>@define-response(APIConnectionStatus)    APIConnectionStatus contains information related to the status of   the connection between the API and the @@ddp-hardware-module-name@@.</td>
-</tr>
+</thead><tbody>
 </tbody></table>
 
 <h2 id="listenforpaymentdata">ListenForPaymentData</h2>
+<pre class="highlight objective_c"><code><span class="p">[</span><span class="n">DotDashPayAPI</span><span class="p">.</span><span class="n">hardware</span> <span class="nf">listenForPaymentData</span><span class="p">:</span><span class="n">args</span> <span class="nf">onError</span><span class="p">:</span><span class="o">^</span><span class="p">(</span><span class="n">ErrorResponse</span><span class="o">*</span> <span class="n">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Handle error response
+</span><span class="p">}</span> <span class="nf">onPaymentHardwareStartedRead</span><span class="p">:</span><span class="o">^</span><span class="p">(</span><span class="n">PaymentHardwareStartedRead</span><span class="o">*</span> <span class="n">response</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Handle response
+</span><span class="p">}</span> <span class="nf">onPaymentHardwareFinishedRead</span><span class="p">:</span><span class="o">^</span><span class="p">(</span><span class="n">PaymentHardwareFinishedRead</span><span class="o">*</span> <span class="n">response</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Handle response
+</span><span class="p">}];</span>
+</code></pre>
 
 <p>Listen for payment data from the payment peripheral hardware
           connected to the @@ddp-hardware-module-name@@.</p>
 
 <h3 id="hardware-listenforpaymentdataargs">Hardware.ListenForPaymentDataArgs</h3>
+<pre class="highlight objective_c"><code><span class="n">ListenForPaymentDataArgs</span><span class="o">*</span> <span class="n">args</span> <span class="o">=</span> <span class="p">[[</span><span class="n">ListenForPaymentDataArgs</span> <span class="nf">alloc</span><span class="p">]</span> <span class="nf">init</span><span class="p">];</span>
+<span class="p">[</span><span class="n">args</span><span class="p">.</span><span class="n">paymentHardwareArray</span> <span class="nf">addValue</span><span class="p">:</span><span class="n">ListenForPaymentDataArgs_PaymentHardwareType_Msr</span><span class="p">];</span>
+<span class="n">args</span><span class="p">.</span><span class="n">useExistingData</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span>
+<span class="n">args</span><span class="p">.</span><span class="n">useExistingDataSecondsWindow</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</code></pre>
 
 <table><thead>
 <tr>
@@ -1043,6 +1118,9 @@
 </tbody></table>
 
 <h3 id="hardware-paymenthardwarestartedread">Hardware.PaymentHardwareStartedRead</h3>
+<pre class="highlight objective_c"><code><span class="nl">onPaymentHardwareStartedRead:</span><span class="o">^</span><span class="p">(</span><span class="n">PaymentHardwareStartedRead</span><span class="o">*</span> <span class="n">response</span><span class="p">)</span> <span class="p">{</span>
+<span class="p">}</span>
+</code></pre>
 
 <p>Response when the magnetic-stripe reader starts reading data from a
   magnetic stripe card.</p>
@@ -1059,6 +1137,10 @@
 </tbody></table>
 
 <h3 id="hardware-paymenthardwarefinishedread">Hardware.PaymentHardwareFinishedRead</h3>
+<pre class="highlight objective_c"><code><span class="nl">onPaymentHardwareFinishedRead:</span><span class="o">^</span><span class="p">(</span><span class="n">PaymentHardwareFinishedRead</span><span class="o">*</span> <span class="n">response</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">NSString</span><span class="o">*</span> <span class="n">payid</span> <span class="o">=</span> <span class="n">response</span><span class="p">.</span><span class="n">payid</span><span class="p">;</span>  <span class="c1">// payid = @"PaymentHardwareFinishedRead.payid"
+</span><span class="p">}</span>
+</code></pre>
 
 <p>Response when the magnetic-stripe reader finishes reading data from
   a magnetic stripe card.</p>
@@ -1082,11 +1164,19 @@
 </tbody></table>
 
 <h2 id="getapiconnectionstatus">GetAPIConnectionStatus</h2>
+<pre class="highlight objective_c"><code><span class="p">[</span><span class="n">DotDashPayAPI</span><span class="p">.</span><span class="n">hardware</span> <span class="nf">getAPIConnectionStatus</span><span class="p">:</span><span class="n">args</span> <span class="nf">onError</span><span class="p">:</span><span class="o">^</span><span class="p">(</span><span class="n">ErrorResponse</span><span class="o">*</span> <span class="n">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Handle error response
+</span><span class="p">}</span> <span class="nf">onAPIConnectionStatus</span><span class="p">:</span><span class="o">^</span><span class="p">(</span><span class="n">APIConnectionStatus</span><span class="o">*</span> <span class="n">response</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Handle response
+</span><span class="p">}];</span>
+</code></pre>
 
 <p>Checks the status of the connection between the API and the
           DotDashPay @@ddp-hardware-module-name@@.</p>
 
 <h3 id="hardware-getapiconnectionstatusargs">Hardware.GetAPIConnectionStatusArgs</h3>
+<pre class="highlight objective_c"><code><span class="n">GetAPIConnectionStatusArgs</span><span class="o">*</span> <span class="n">args</span> <span class="o">=</span> <span class="p">[[</span><span class="n">GetAPIConnectionStatusArgs</span> <span class="nf">alloc</span><span class="p">]</span> <span class="nf">init</span><span class="p">];</span>
+</code></pre>
 
 <table><thead>
 <tr>
@@ -1100,6 +1190,11 @@
 </tbody></table>
 
 <h3 id="hardware-apiconnectionstatus">Hardware.APIConnectionStatus</h3>
+<pre class="highlight objective_c"><code><span class="nl">onAPIConnectionStatus:</span><span class="o">^</span><span class="p">(</span><span class="n">APIConnectionStatus</span><span class="o">*</span> <span class="n">response</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">APIConnectionStatus_Status</span> <span class="n">status</span> <span class="o">=</span> <span class="n">response</span><span class="p">.</span><span class="n">status</span><span class="p">;</span>  <span class="c1">// status = APIConnectionStatus_Status_Success (0)
+</span>    <span class="n">NSString</span><span class="o">*</span> <span class="n">info</span> <span class="o">=</span> <span class="n">response</span><span class="p">.</span><span class="n">info</span><span class="p">;</span>  <span class="c1">// info = @"API is connected"
+</span><span class="p">}</span>
+</code></pre>
 
 <p>APIConnectionStatus contains information related to the status of
   the connection between the API and the @@ddp-hardware-module-name@@.</p>
@@ -1130,11 +1225,19 @@
 </tbody></table>
 
 <h2 id="getinternetconnectionstatus">GetInternetConnectionStatus</h2>
+<pre class="highlight objective_c"><code><span class="p">[</span><span class="n">DotDashPayAPI</span><span class="p">.</span><span class="n">hardware</span> <span class="nf">getInternetConnectionStatus</span><span class="p">:</span><span class="n">args</span> <span class="nf">onError</span><span class="p">:</span><span class="o">^</span><span class="p">(</span><span class="n">ErrorResponse</span><span class="o">*</span> <span class="n">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Handle error response
+</span><span class="p">}</span> <span class="nf">onInternetConnectionStatus</span><span class="p">:</span><span class="o">^</span><span class="p">(</span><span class="n">InternetConnectionStatus</span><span class="o">*</span> <span class="n">response</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Handle response
+</span><span class="p">}];</span>
+</code></pre>
 
 <p>Returns the status of the DotDashPay
           @@ddp-hardware-module-name@@&rsquo;s connection to the Internet.</p>
 
 <h3 id="hardware-getinternetconnectionstatusargs">Hardware.GetInternetConnectionStatusArgs</h3>
+<pre class="highlight objective_c"><code><span class="n">GetInternetConnectionStatusArgs</span><span class="o">*</span> <span class="n">args</span> <span class="o">=</span> <span class="p">[[</span><span class="n">GetInternetConnectionStatusArgs</span> <span class="nf">alloc</span><span class="p">]</span> <span class="nf">init</span><span class="p">];</span>
+</code></pre>
 
 <table><thead>
 <tr>
@@ -1148,6 +1251,11 @@
 </tbody></table>
 
 <h3 id="hardware-internetconnectionstatus">Hardware.InternetConnectionStatus</h3>
+<pre class="highlight objective_c"><code><span class="nl">onInternetConnectionStatus:</span><span class="o">^</span><span class="p">(</span><span class="n">InternetConnectionStatus</span><span class="o">*</span> <span class="n">response</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">InternetConnectionStatus_Status</span> <span class="n">status</span> <span class="o">=</span> <span class="n">response</span><span class="p">.</span><span class="n">status</span><span class="p">;</span>  <span class="c1">// status = InternetConnectionStatus_Status_Success (0)
+</span>    <span class="n">NSString</span><span class="o">*</span> <span class="n">info</span> <span class="o">=</span> <span class="n">response</span><span class="p">.</span><span class="n">info</span><span class="p">;</span>  <span class="c1">// info = @"Internet is connected"
+</span><span class="p">}</span>
+</code></pre>
 
 <p>InternetConnectionStatus contains information related to the status
   of the @@ddp-hardware-module-name@@&rsquo;s connection to the Internet
@@ -1179,10 +1287,16 @@
 </tbody></table>
 
 <h2 id="configurewifi">ConfigureWifi</h2>
+<pre class="highlight objective_c"><code><span class="p">[</span><span class="n">DotDashPayAPI</span><span class="p">.</span><span class="n">hardware</span> <span class="nf">configureWifi</span><span class="p">:</span><span class="n">args</span> <span class="nf">onError</span><span class="p">:</span><span class="o">^</span><span class="p">(</span><span class="n">ErrorResponse</span><span class="o">*</span> <span class="n">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Handle error response
+</span><span class="p">}</span> <span class="nf">onConfigureWifiFinished</span><span class="p">:</span><span class="o">^</span><span class="p">(</span><span class="n">ConfigureWifiFinished</span><span class="o">*</span> <span class="n">response</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Handle response
+</span><span class="p">}];</span>
+</code></pre>
 
 <h3 id="hardware-configurewifiargs">Hardware.ConfigureWifiArgs</h3>
-
-<p>/</p>
+<pre class="highlight objective_c"><code><span class="n">ConfigureWifiArgs</span><span class="o">*</span> <span class="n">args</span> <span class="o">=</span> <span class="p">[[</span><span class="n">ConfigureWifiArgs</span> <span class="nf">alloc</span><span class="p">]</span> <span class="nf">init</span><span class="p">];</span>
+</code></pre>
 
 <table><thead>
 <tr>
@@ -1193,27 +1307,35 @@
 <th>Description</th>
 </tr>
 </thead><tbody>
+</tbody></table>
+
+<h3 id="hardware-configurewififinished">Hardware.ConfigureWifiFinished</h3>
+<pre class="highlight objective_c"><code><span class="nl">onConfigureWifiFinished:</span><span class="o">^</span><span class="p">(</span><span class="n">ConfigureWifiFinished</span><span class="o">*</span> <span class="n">response</span><span class="p">)</span> <span class="p">{</span>
+<span class="p">}</span>
+</code></pre>
+
+<table><thead>
 <tr>
-<td>status</td>
-<td>Status</td>
-<td>Yes</td>
-<td>None</td>
-<td>@define-response(APIConnectionStatus)    APIConnectionStatus contains information related to the status of   the connection between the API and the @@ddp-hardware-module-name@@.</td>
+<th>Parameter</th>
+<th>Type</th>
+<th>Required?</th>
+<th>Default</th>
+<th>Description</th>
 </tr>
-<tr>
-<td>info</td>
-<td>string</td>
-<td>Yes</td>
-<td>None</td>
-<td>@define-response(APIConnectionStatus)    APIConnectionStatus contains information related to the status of   the connection between the API and the @@ddp-hardware-module-name@@.</td>
-</tr>
+</thead><tbody>
 </tbody></table>
 
 <h2 id="configureethernet">ConfigureEthernet</h2>
+<pre class="highlight objective_c"><code><span class="p">[</span><span class="n">DotDashPayAPI</span><span class="p">.</span><span class="n">hardware</span> <span class="nf">configureEthernet</span><span class="p">:</span><span class="n">args</span> <span class="nf">onError</span><span class="p">:</span><span class="o">^</span><span class="p">(</span><span class="n">ErrorResponse</span><span class="o">*</span> <span class="n">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Handle error response
+</span><span class="p">}</span> <span class="nf">onConfigureEthernetFinished</span><span class="p">:</span><span class="o">^</span><span class="p">(</span><span class="n">ConfigureEthernetFinished</span><span class="o">*</span> <span class="n">response</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Handle response
+</span><span class="p">}];</span>
+</code></pre>
 
 <h3 id="hardware-configureethernetargs">Hardware.ConfigureEthernetArgs</h3>
-
-<p>/</p>
+<pre class="highlight objective_c"><code><span class="n">ConfigureEthernetArgs</span><span class="o">*</span> <span class="n">args</span> <span class="o">=</span> <span class="p">[[</span><span class="n">ConfigureEthernetArgs</span> <span class="nf">alloc</span><span class="p">]</span> <span class="nf">init</span><span class="p">];</span>
+</code></pre>
 
 <table><thead>
 <tr>
@@ -1224,28 +1346,38 @@
 <th>Description</th>
 </tr>
 </thead><tbody>
+</tbody></table>
+
+<h3 id="hardware-configureethernetfinished">Hardware.ConfigureEthernetFinished</h3>
+<pre class="highlight objective_c"><code><span class="nl">onConfigureEthernetFinished:</span><span class="o">^</span><span class="p">(</span><span class="n">ConfigureEthernetFinished</span><span class="o">*</span> <span class="n">response</span><span class="p">)</span> <span class="p">{</span>
+<span class="p">}</span>
+</code></pre>
+
+<table><thead>
 <tr>
-<td>status</td>
-<td>Status</td>
-<td>Yes</td>
-<td>None</td>
-<td>@define-response(APIConnectionStatus)    APIConnectionStatus contains information related to the status of   the connection between the API and the @@ddp-hardware-module-name@@.</td>
+<th>Parameter</th>
+<th>Type</th>
+<th>Required?</th>
+<th>Default</th>
+<th>Description</th>
 </tr>
-<tr>
-<td>info</td>
-<td>string</td>
-<td>Yes</td>
-<td>None</td>
-<td>@define-response(APIConnectionStatus)    APIConnectionStatus contains information related to the status of   the connection between the API and the @@ddp-hardware-module-name@@.</td>
-</tr>
+</thead><tbody>
 </tbody></table>
 
 <h2 id="listconnectedperipherals">ListConnectedPeripherals</h2>
+<pre class="highlight objective_c"><code><span class="p">[</span><span class="n">DotDashPayAPI</span><span class="p">.</span><span class="n">hardware</span> <span class="nf">listConnectedPeripherals</span><span class="p">:</span><span class="n">args</span> <span class="nf">onError</span><span class="p">:</span><span class="o">^</span><span class="p">(</span><span class="n">ErrorResponse</span><span class="o">*</span> <span class="n">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Handle error response
+</span><span class="p">}</span> <span class="nf">onConnectedPeripheralsList</span><span class="p">:</span><span class="o">^</span><span class="p">(</span><span class="n">ConnectedPeripheralsList</span><span class="o">*</span> <span class="n">response</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Handle response
+</span><span class="p">}];</span>
+</code></pre>
 
 <p>Returns a list of all attached hardware peripherals to the
           DotDashPay @@ddp-hardware-module-name@@.</p>
 
 <h3 id="hardware-listconnectedperipheralsargs">Hardware.ListConnectedPeripheralsArgs</h3>
+<pre class="highlight objective_c"><code><span class="n">ListConnectedPeripheralsArgs</span><span class="o">*</span> <span class="n">args</span> <span class="o">=</span> <span class="p">[[</span><span class="n">ListConnectedPeripheralsArgs</span> <span class="nf">alloc</span><span class="p">]</span> <span class="nf">init</span><span class="p">];</span>
+</code></pre>
 
 <table><thead>
 <tr>
@@ -1259,6 +1391,11 @@
 </tbody></table>
 
 <h3 id="hardware-connectedperipheralslist">Hardware.ConnectedPeripheralsList</h3>
+<pre class="highlight objective_c"><code><span class="nl">onConnectedPeripheralsList:</span><span class="o">^</span><span class="p">(</span><span class="n">ConnectedPeripheralsList</span><span class="o">*</span> <span class="n">response</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">NSArray</span><span class="o">*</span> <span class="n">attachedValidPeriphs</span> <span class="o">=</span> <span class="n">response</span><span class="p">.</span><span class="n">attachedValidPeriphsArray</span><span class="p">;</span>  <span class="c1">// attachedValidPeriphs = @[@"MagTekSureSwipe21040145", ...]
+</span>    <span class="n">NSArray</span><span class="o">*</span> <span class="n">attachedErrorPeriphs</span> <span class="o">=</span> <span class="n">response</span><span class="p">.</span><span class="n">attachedErrorPeriphsArray</span><span class="p">;</span>  <span class="c1">// attachedErrorPeriphs = @[@""]
+</span><span class="p">}</span>
+</code></pre>
 
 <p>Response indicating the set of hardware peripherals that are
   connected to the DotDashPay @@ddp-hardware-module-name@@.</p>
@@ -1291,6 +1428,12 @@
 <h1 id="global">Global</h1>
 
 <h2 id="configure">Configure</h2>
+<pre class="highlight objective_c"><code><span class="p">[</span><span class="n">DotDashPayAPI</span><span class="p">.</span><span class="n">global</span> <span class="nf">configure</span><span class="p">:</span><span class="n">args</span> <span class="nf">onError</span><span class="p">:</span><span class="o">^</span><span class="p">(</span><span class="n">ErrorResponse</span><span class="o">*</span> <span class="n">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Handle error response
+</span><span class="p">}</span> <span class="nf">onGlobalConfigurationStatus</span><span class="p">:</span><span class="o">^</span><span class="p">(</span><span class="n">GlobalConfigurationStatus</span><span class="o">*</span> <span class="n">response</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Handle response
+</span><span class="p">}];</span>
+</code></pre>
 
 <p>This function sets up the connection to the DotDashPay
           @@ddp-hardware-module-name@@ and validates all of the input
@@ -1312,6 +1455,10 @@
           </private></p>
 
 <h3 id="global-configureargs">Global.ConfigureArgs</h3>
+<pre class="highlight objective_c"><code><span class="n">ConfigureArgs</span><span class="o">*</span> <span class="n">args</span> <span class="o">=</span> <span class="p">[[</span><span class="n">ConfigureArgs</span> <span class="nf">alloc</span><span class="p">]</span> <span class="nf">init</span><span class="p">];</span>
+<span class="n">args</span><span class="p">.</span><span class="n">simulate</span> <span class="o">=</span> <span class="nb">YES</span><span class="p">;</span>
+<span class="n">args</span><span class="p">.</span><span class="n">testing</span> <span class="o">=</span> <span class="nb">YES</span><span class="p">;</span>
+</code></pre>
 
 <table><thead>
 <tr>
@@ -1339,6 +1486,11 @@
 </tbody></table>
 
 <h3 id="global-globalconfigurationstatus">Global.GlobalConfigurationStatus</h3>
+<pre class="highlight objective_c"><code><span class="nl">onGlobalConfigurationStatus:</span><span class="o">^</span><span class="p">(</span><span class="n">GlobalConfigurationStatus</span><span class="o">*</span> <span class="n">response</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">GlobalConfigurationStatus_Status</span> <span class="n">status</span> <span class="o">=</span> <span class="n">response</span><span class="p">.</span><span class="n">status</span><span class="p">;</span>  <span class="c1">// status = GlobalConfigurationStatus_Status_Success (0)
+</span>    <span class="n">NSString</span><span class="o">*</span> <span class="n">info</span> <span class="o">=</span> <span class="n">response</span><span class="p">.</span><span class="n">info</span><span class="p">;</span>  <span class="c1">// info = @"Global configuration succeeded"
+</span><span class="p">}</span>
+</code></pre>
 
 <p>GlobalConfigurationStatus contains information about the status of
   the API and the @@ddp-hardware-module-name@@&rsquo;s current configuration
