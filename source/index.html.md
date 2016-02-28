@@ -41,6 +41,7 @@ Authorize a payment, i.e. verify that the payment_info is
           do not plan to settle it, you should call
           [Payment.VoidAuthorization](#voidauthorization).
 
+<a name="Payment.PreAuthorizeArgs"></a>
 ### Payment.PreAuthorizeArgs
 ```objc
 PreAuthorizeArgs* args = [[PreAuthorizeArgs alloc] init];
@@ -57,6 +58,7 @@ dollars | uint32 | Yes | None | number of dollars to charge, the X in $X.Y
 cents | uint32 | No | 0 | number of cents to charge, the Y in $X.Y
 
 
+<a name="Payment.PreAuthorize-Payment.FinishedAuthorization"></a>
 ### Payment.FinishedAuthorization
 
 ```objc
@@ -104,6 +106,7 @@ Settles a payment, which is equivalent to initiating a
           finalize the transaction and the transaction cannot be
           voided later on.
 
+<a name="Payment.SettleArgs"></a>
 ### Payment.SettleArgs
 ```objc
 SettleArgs* args = [[SettleArgs alloc] init];
@@ -120,6 +123,7 @@ dollars | uint32 | Yes | None | number of dollars to charge, the X in $X.Y
 cents | uint32 | No | 0 | number of cents to charge, the Y in $X.Y
 
 
+<a name="Payment.Settle-Payment.StartedSettlement"></a>
 ### Payment.StartedSettlement
 
 ```objc
@@ -135,6 +139,7 @@ Parameter   |   Type   | Required? | Default | Description
 payid | string | No | None | if applicable, the id from [Payment.PreAuthorize](#preauthorize) used to      settle the payment
 
 
+<a name="Payment.Settle-Payment.FinishedSettlement"></a>
 ### Payment.FinishedSettlement
 
 ```objc
@@ -187,6 +192,7 @@ Void an authorized payment. You can only call this function
           already settled. If it was settled, you should call
           [Payment.Refund](#refund) instead.
 
+<a name="Payment.VoidAuthorizationArgs"></a>
 ### Payment.VoidAuthorizationArgs
 ```objc
 VoidAuthorizationArgs* args = [[VoidAuthorizationArgs alloc] init];
@@ -199,6 +205,7 @@ Parameter   |   Type   | Required? | Default | Description
 transaction_id | string | Yes | None | the transaction id returned from the payment processor
 
 
+<a name="Payment.VoidAuthorization-Payment.FinishedAuthorizationVoid"></a>
 ### Payment.FinishedAuthorizationVoid
 
 ```objc
@@ -222,6 +229,7 @@ Parameter   |   Type   | Required? | Default | Description
 ```
 
 
+<a name="Payment.VoidRefundArgs"></a>
 ### Payment.VoidRefundArgs
 ```objc
 VoidRefundArgs* args = [[VoidRefundArgs alloc] init];
@@ -232,6 +240,7 @@ Parameter   |   Type   | Required? | Default | Description
 ------------- | -------- | --------- | ------- | -----------
 
 
+<a name="Payment.VoidRefund-Payment.FinishedVoidRefund"></a>
 ### Payment.FinishedVoidRefund
 
 ```objc
@@ -255,6 +264,7 @@ Parameter   |   Type   | Required? | Default | Description
 Refund a settled payment. You can only call this function
           for a payment that was successfully settled.
 
+<a name="Payment.RefundArgs"></a>
 ### Payment.RefundArgs
 ```objc
 RefundArgs* args = [[RefundArgs alloc] init];
@@ -267,6 +277,7 @@ Parameter   |   Type   | Required? | Default | Description
 transaction_id | string | Yes | None | the transaction id returned from the payment processor
 
 
+<a name="Payment.Refund-Payment.FinishedRefund"></a>
 ### Payment.FinishedRefund
 
 ```objc
@@ -295,6 +306,7 @@ info | string | Yes | None | a unique id that can be used to identify the refund
 ```
 
 
+<a name="Payment.AdjustAuthorizationAmountArgs"></a>
 ### Payment.AdjustAuthorizationAmountArgs
 ```objc
 AdjustAuthorizationAmountArgs* args = [[AdjustAuthorizationAmountArgs alloc] init];
@@ -305,6 +317,7 @@ Parameter   |   Type   | Required? | Default | Description
 ------------- | -------- | --------- | ------- | -----------
 
 
+<a name="Payment.AdjustAuthorizationAmount-Payment.FinishedAdjustAuthorizationAmount"></a>
 ### Payment.FinishedAdjustAuthorizationAmount
 
 ```objc
@@ -327,6 +340,7 @@ Parameter   |   Type   | Required? | Default | Description
 ```
 
 
+<a name="Payment.QueryCardBalanceArgs"></a>
 ### Payment.QueryCardBalanceArgs
 ```objc
 QueryCardBalanceArgs* args = [[QueryCardBalanceArgs alloc] init];
@@ -337,6 +351,7 @@ Parameter   |   Type   | Required? | Default | Description
 ------------- | -------- | --------- | ------- | -----------
 
 
+<a name="Payment.QueryCardBalance-Payment.CardBalance"></a>
 ### Payment.CardBalance
 
 ```objc
@@ -359,6 +374,7 @@ Parameter   |   Type   | Required? | Default | Description
 ```
 
 
+<a name="Payment.CreateRecurringPaymentArgs"></a>
 ### Payment.CreateRecurringPaymentArgs
 ```objc
 CreateRecurringPaymentArgs* args = [[CreateRecurringPaymentArgs alloc] init];
@@ -369,6 +385,7 @@ Parameter   |   Type   | Required? | Default | Description
 ------------- | -------- | --------- | ------- | -----------
 
 
+<a name="Payment.CreateRecurringPayment-Payment.FinishedCreateRecurringPayment"></a>
 ### Payment.FinishedCreateRecurringPayment
 
 ```objc
@@ -391,6 +408,7 @@ Parameter   |   Type   | Required? | Default | Description
 ```
 
 
+<a name="Payment.ConfigurePaymentProcessorArgs"></a>
 ### Payment.ConfigurePaymentProcessorArgs
 ```objc
 ConfigurePaymentProcessorArgs* args = [[ConfigurePaymentProcessorArgs alloc] init];
@@ -401,6 +419,7 @@ Parameter   |   Type   | Required? | Default | Description
 ------------- | -------- | --------- | ------- | -----------
 
 
+<a name="Payment.ConfigurePaymentProcessor-Payment.FinishedConfigurePaymentProcessor"></a>
 ### Payment.FinishedConfigurePaymentProcessor
 
 ```objc
@@ -437,6 +456,7 @@ This is a convenience request that combines
           [Hardware.ListenForPaymentData](#listenforpaymentdata) followed by
           [Payment.Settle](#settle) yourself.
 
+<a name="Payment.ListenForPaymentDataThenSettleArgs"></a>
 ### Payment.ListenForPaymentDataThenSettleArgs
 ```objc
 ListenForPaymentDataThenSettleArgs* args = [[ListenForPaymentDataThenSettleArgs alloc] init];
@@ -453,6 +473,7 @@ cents | uint32 | No | 0 | number of cents to charge, the Y in $X.Y
 only_new_data | bool | No | true | if true, then only return new data, e.g.  from a new magstripe      swipe or NFC touch, if false, then return new data OR recent data      from, e.g. a user swiping before being prompted.
 
 
+<a name="Payment.ListenForPaymentDataThenSettle-Hardware.PaymentHardwareStartedRead"></a>
 ### Hardware.PaymentHardwareStartedRead
 
 ```objc
@@ -466,6 +487,7 @@ Parameter   |   Type   | Required? | Default | Description
 ------------- | -------- | --------- | ------- | -----------
 
 
+<a name="Payment.ListenForPaymentDataThenSettle-Hardware.PaymentHardwareFinishedRead"></a>
 ### Hardware.PaymentHardwareFinishedRead
 
 ```objc
@@ -481,6 +503,7 @@ Parameter   |   Type   | Required? | Default | Description
 payid | string | Yes | None | m
 
 
+<a name="Payment.ListenForPaymentDataThenSettle-Payment.StartedSettlement"></a>
 ### Payment.StartedSettlement
 
 ```objc
@@ -496,6 +519,7 @@ Parameter   |   Type   | Required? | Default | Description
 payid | string | No | None | if applicable, the id from [Payment.PreAuthorize](#preauthorize) used to      settle the payment
 
 
+<a name="Payment.ListenForPaymentDataThenSettle-Payment.FinishedSettlement"></a>
 ### Payment.FinishedSettlement
 
 ```objc
@@ -543,6 +567,7 @@ created_at | string | No | None | indicates the time the settlement was created
 ```
 
 
+<a name="Hardware.ConfigureHardwareArgs"></a>
 ### Hardware.ConfigureHardwareArgs
 ```objc
 ConfigureHardwareArgs* args = [[ConfigureHardwareArgs alloc] init];
@@ -553,6 +578,7 @@ Parameter   |   Type   | Required? | Default | Description
 ------------- | -------- | --------- | ------- | -----------
 
 
+<a name="Hardware.ConfigureHardware-Hardware.ConfigureHardwareFinished"></a>
 ### Hardware.ConfigureHardwareFinished
 
 ```objc
@@ -578,6 +604,7 @@ Parameter   |   Type   | Required? | Default | Description
 Listen for payment data from the payment peripheral hardware
           connected to the @@ddp-hardware-module-name@@.
 
+<a name="Hardware.ListenForPaymentDataArgs"></a>
 ### Hardware.ListenForPaymentDataArgs
 ```objc
 ListenForPaymentDataArgs* args = [[ListenForPaymentDataArgs alloc] init];
@@ -592,6 +619,7 @@ Parameter   |   Type   | Required? | Default | Description
 payment_hardware | PaymentHardwareType [Array] | No | None | payment_hardware is used to define which payment hardware we      should be listening to
 
 
+<a name="Hardware.ListenForPaymentData-Hardware.PaymentHardwareStartedRead"></a>
 ### Hardware.PaymentHardwareStartedRead
 
 ```objc
@@ -605,6 +633,7 @@ Parameter   |   Type   | Required? | Default | Description
 ------------- | -------- | --------- | ------- | -----------
 
 
+<a name="Hardware.ListenForPaymentData-Hardware.PaymentHardwareFinishedRead"></a>
 ### Hardware.PaymentHardwareFinishedRead
 
 ```objc
@@ -631,6 +660,7 @@ payid | string | Yes | None | m
 Checks the status of the connection between the API and the
           DotDashPay @@ddp-hardware-module-name@@.
 
+<a name="Hardware.GetAPIConnectionStatusArgs"></a>
 ### Hardware.GetAPIConnectionStatusArgs
 ```objc
 GetAPIConnectionStatusArgs* args = [[GetAPIConnectionStatusArgs alloc] init];
@@ -641,6 +671,7 @@ Parameter   |   Type   | Required? | Default | Description
 ------------- | -------- | --------- | ------- | -----------
 
 
+<a name="Hardware.GetAPIConnectionStatus-Hardware.APIConnectionStatus"></a>
 ### Hardware.APIConnectionStatus
 
 ```objc
@@ -669,6 +700,7 @@ info | string | Yes | None | m
 Returns the status of the DotDashPay
           @@ddp-hardware-module-name@@'s connection to the Internet.
 
+<a name="Hardware.GetInternetConnectionStatusArgs"></a>
 ### Hardware.GetInternetConnectionStatusArgs
 ```objc
 GetInternetConnectionStatusArgs* args = [[GetInternetConnectionStatusArgs alloc] init];
@@ -679,6 +711,7 @@ Parameter   |   Type   | Required? | Default | Description
 ------------- | -------- | --------- | ------- | -----------
 
 
+<a name="Hardware.GetInternetConnectionStatus-Hardware.InternetConnectionStatus"></a>
 ### Hardware.InternetConnectionStatus
 
 ```objc
@@ -707,6 +740,7 @@ info | string | Yes | None | m
 ```
 
 
+<a name="Hardware.ConfigureWifiArgs"></a>
 ### Hardware.ConfigureWifiArgs
 ```objc
 ConfigureWifiArgs* args = [[ConfigureWifiArgs alloc] init];
@@ -717,6 +751,7 @@ Parameter   |   Type   | Required? | Default | Description
 ------------- | -------- | --------- | ------- | -----------
 
 
+<a name="Hardware.ConfigureWifi-Hardware.ConfigureWifiFinished"></a>
 ### Hardware.ConfigureWifiFinished
 
 ```objc
@@ -739,6 +774,7 @@ Parameter   |   Type   | Required? | Default | Description
 ```
 
 
+<a name="Hardware.ConfigureEthernetArgs"></a>
 ### Hardware.ConfigureEthernetArgs
 ```objc
 ConfigureEthernetArgs* args = [[ConfigureEthernetArgs alloc] init];
@@ -749,6 +785,7 @@ Parameter   |   Type   | Required? | Default | Description
 ------------- | -------- | --------- | ------- | -----------
 
 
+<a name="Hardware.ConfigureEthernet-Hardware.ConfigureEthernetFinished"></a>
 ### Hardware.ConfigureEthernetFinished
 
 ```objc
@@ -772,6 +809,7 @@ Parameter   |   Type   | Required? | Default | Description
 Returns a list of all attached hardware peripherals to the
           DotDashPay @@ddp-hardware-module-name@@.
 
+<a name="Hardware.ListConnectedPeripheralsArgs"></a>
 ### Hardware.ListConnectedPeripheralsArgs
 ```objc
 ListConnectedPeripheralsArgs* args = [[ListConnectedPeripheralsArgs alloc] init];
@@ -782,6 +820,7 @@ Parameter   |   Type   | Required? | Default | Description
 ------------- | -------- | --------- | ------- | -----------
 
 
+<a name="Hardware.ListConnectedPeripherals-Hardware.ConnectedPeripheralsList"></a>
 ### Hardware.ConnectedPeripheralsList
 
 ```objc
@@ -828,6 +867,7 @@ This function sets up the connection to the DotDashPay
           attribute.
           </private>
 
+<a name="Global.ConfigureArgs"></a>
 ### Global.ConfigureArgs
 ```objc
 ConfigureArgs* args = [[ConfigureArgs alloc] init];
@@ -842,6 +882,7 @@ simulate | bool | No | true | Whether the DotDashPay simulator should be used.
 testing | bool | No | true | Whether to use sandboxed payment processing.
 
 
+<a name="Global.Configure-Global.GlobalConfigurationStatus"></a>
 ### Global.GlobalConfigurationStatus
 
 ```objc
