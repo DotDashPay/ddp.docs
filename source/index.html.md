@@ -10,11 +10,11 @@ An ErrorResponse is a potential response from any request. It is
   which takes `ErrorResponse` as an argument. If this callback is ever
   invoked, a non-recoverable error has occurred on the
   @@ddp-hardware-module-name@@. For instance, if you call
-  [Hardware.ListenForPaymentData](#listenforpaymentdata), a payer swipes their
+  [Hardware.ReceivePaymentData](#receivepaymentdata), a payer swipes their
   magnetic stripe card, and the magnetic card reader fails to extract
   the payer's card information, an `ErrorResponse` will be returned so
   that you can alert the payer their card did not read and call
-  [Hardware.ListenForPaymentData](#listenforpaymentdata) again.
+  [Hardware.ReceivePaymentData](#receivepaymentdata) again.
 
 Parameter   |   Type   | Required? | Default | Description
 ------------- | -------- | --------- | ------- | -----------
@@ -26,9 +26,9 @@ error_message | string | No | None | a human-readable message associated with th
 
 ## PreAuthorize
 ```objc
-[DotDashPayAPI.payment preAuthorize:args onError:^(ErrorResponse* error) {
+[DotDashPayAPI.payment preAuthorize:args onError:^(DDPErrorResponse* error) {
     // Handle error response
-} onFinishedAuthorization:^(FinishedAuthorization* response) {
+} onPreAuthorized:^(DDPPreAuthorized* response) {
     // Handle response
 }];
 ```
@@ -39,15 +39,16 @@ Authorize a payment, i.e. verify that the payment_info is
           call [Payment.Settle](#settle) later. Alternatively, if you
           wish to void this authorization, which you should do if you
           do not plan to settle it, you should call
-          [Payment.VoidAuthorization](#voidauthorization).
+          [Payment.VoidPreAuthorize](#voidpreauthorize).
 
 <a name="Payment.PreAuthorizeArgs"></a>
 ### Payment.PreAuthorizeArgs
 ```objc
-PreAuthorizeArgs* args = [[PreAuthorizeArgs alloc] init];
-args.payid = @"PaymentHardwareFinishedRead.payid";
+DDPPreAuthorizeArgs* args = [[DDPPreAuthorizeArgs alloc] init];
+args.payid = @"ReceivedPaymentData.payid";
 args.dollars = 1;
 args.cents = 28;
+args.currency = @"USD";
 ```
 
 
@@ -56,15 +57,16 @@ Parameter   |   Type   | Required? | Default | Description
 payid | string | Yes | None | the id associated with the payment data e.g. returned from      WaitForPaymentDataFromHardware
 dollars | uint32 | Yes | None | number of dollars to charge, the X in $X.Y
 cents | uint32 | No | 0 | number of cents to charge, the Y in $X.Y
+currency | string | No | "USD" | currency of the dollars and cents (only USD currently supported)
 
 
-<a name="Payment.PreAuthorize-Payment.FinishedAuthorization"></a>
-### Payment.FinishedAuthorization
+<a name="Payment.PreAuthorize-Payment.PreAuthorized"></a>
+### Payment.PreAuthorized
 
 ```objc
-onFinishedAuthorization:^(FinishedAuthorization* response) {
-    NSString* payid = response.payid;  // payid = @"PaymentHardwareFinishedRead.payid"
-    FinishedAuthorization_PaymentStatus status = response.status;  // status = FinishedAuthorization_PaymentStatus_Success (0)
+onPreAuthorized:^(DDPPreAuthorized* response) {
+    NSString* payid = response.payid;  // payid = @"ReceivedPaymentData.payid"
+    DDPPreAuthorized_PaymentStatus status = response.status;  // status = DDPPreAuthorized_PaymentStatus_Success (0)
     NSString* transactionId = response.transactionId;  // transactionId = @"txn-NG9jR86SC3hjzQHA8h5X3pwz"
     NSString* info = response.info;  // info = @"Authorization succeeded"
     NSString* customerId = response.customerId;  // customerId = @"2DAuJMBrMyaC"
@@ -84,11 +86,11 @@ customer_id | string | No | None | a unique id that can be used to identify the 
 
 ## Settle
 ```objc
-[DotDashPayAPI.payment settle:args onError:^(ErrorResponse* error) {
+[DotDashPayAPI.payment settle:args onError:^(DDPErrorResponse* error) {
     // Handle error response
-} onStartedSettlement:^(StartedSettlement* response) {
+} onStartedSettling:^(DDPStartedSettling* response) {
     // Handle response
-} onFinishedSettlement:^(FinishedSettlement* response) {
+} onSettled:^(DDPSettled* response) {
     // Handle response
 }];
 ```
@@ -96,7 +98,7 @@ Settles a payment, which is equivalent to initiating a
           transfer of money from the payer's bank to your bank.
 
           You may call this function either after receiving data from
-          calling [Hardware.ListenForPaymentData](#listenforpaymentdata) or after
+          calling [Hardware.ReceivePaymentData](#receivepaymentdata) or after
           receiving data from calling
           [Payment.PreAuthorize](#preauthorize).
 
@@ -109,10 +111,11 @@ Settles a payment, which is equivalent to initiating a
 <a name="Payment.SettleArgs"></a>
 ### Payment.SettleArgs
 ```objc
-SettleArgs* args = [[SettleArgs alloc] init];
-args.payid = @"PaymentHardwareFinishedRead.payid";
+DDPSettleArgs* args = [[DDPSettleArgs alloc] init];
+args.payid = @"ReceivedPaymentData.payid";
 args.dollars = 1;
 args.cents = 28;
+args.currency = @"USD";
 ```
 
 
@@ -121,14 +124,15 @@ Parameter   |   Type   | Required? | Default | Description
 payid | string | Yes | None | the id associated with the payment data e.g. returned from      WaitForPaymentDataFromHardware
 dollars | uint32 | Yes | None | number of dollars to charge, the X in $X.Y
 cents | uint32 | No | 0 | number of cents to charge, the Y in $X.Y
+currency | string | No | "USD" | currency of the dollars and cents (only USD currently supported)
 
 
-<a name="Payment.Settle-Payment.StartedSettlement"></a>
-### Payment.StartedSettlement
+<a name="Payment.Settle-Payment.StartedSettling"></a>
+### Payment.StartedSettling
 
 ```objc
-onStartedSettlement:^(StartedSettlement* response) {
-    NSString* payid = response.payid;  // payid = @"PaymentHardwareFinishedRead.payid"
+onStartedSettling:^(DDPStartedSettling* response) {
+    NSString* payid = response.payid;  // payid = @"ReceivedPaymentData.payid"
 }
 ```
 Response when the settle payment initially starts settling the
@@ -139,13 +143,13 @@ Parameter   |   Type   | Required? | Default | Description
 payid | string | No | None | if applicable, the id from [Payment.PreAuthorize](#preauthorize) used to      settle the payment
 
 
-<a name="Payment.Settle-Payment.FinishedSettlement"></a>
-### Payment.FinishedSettlement
+<a name="Payment.Settle-Payment.Settled"></a>
+### Payment.Settled
 
 ```objc
-onFinishedSettlement:^(FinishedSettlement* response) {
-    NSString* payid = response.payid;  // payid = @"PaymentHardwareFinishedRead.payid"
-    FinishedSettlement_PaymentStatus status = response.status;  // status = FinishedSettlement_PaymentStatus_Success (0)
+onSettled:^(DDPSettled* response) {
+    NSString* payid = response.payid;  // payid = @"ReceivedPaymentData.payid"
+    DDPSettled_PaymentStatus status = response.status;  // status = DDPSettled_PaymentStatus_Success (0)
     NSString* transactionId = response.transactionId;  // transactionId = @"txn-NG9jR86SC3hjzQHA8h5X3pwz"
     NSString* info = response.info;  // info = @"Settlement finished successfully"
     NSString* customerId = response.customerId;  // customerId = @"2DAuJMBrMyaC"
@@ -155,6 +159,9 @@ onFinishedSettlement:^(FinishedSettlement* response) {
     BOOL commercial = response.commercial;  // commercial = NO
     BOOL debit = response.debit;  // debit = NO
     NSString* createdAt = response.createdAt;  // createdAt = @"915148799.75"
+    uint32_t dollars = response.dollars;  // dollars = 1
+    uint32_t cents = response.cents;  // cents = 28
+    NSString* currency = response.currency;  // currency = @"USD"
 }
 ```
 Response when the settle payment request returns from the payment
@@ -173,13 +180,16 @@ last4 | string | No | None | the last four digits of the card used (if applicabl
 commercial | bool | No | None | indicates whether the card is a commericial card (if      applicable/available)
 debit | bool | No | None | indicates whether the card is a debit card (if      applicable/available)
 created_at | string | No | None | indicates the time the settlement was created
+dollars | uint32 | No | None | number of dollars in the settlement, the X in $X.Y
+cents | uint32 | No | 0 | number of cents in the settlement, the Y in $X.Y
+currency | string | No | "USD" | currency of the dollars and cents
 
 
-## VoidAuthorization
+## VoidPreAuthorize
 ```objc
-[DotDashPayAPI.payment voidAuthorization:args onError:^(ErrorResponse* error) {
+[DotDashPayAPI.payment voidPreAuthorize:args onError:^(DDPErrorResponse* error) {
     // Handle error response
-} onFinishedAuthorizationVoid:^(FinishedAuthorizationVoid* response) {
+} onVoidedPreAuthorize:^(DDPVoidedPreAuthorize* response) {
     // Handle response
 }];
 ```
@@ -192,11 +202,11 @@ Void an authorized payment. You can only call this function
           already settled. If it was settled, you should call
           [Payment.Refund](#refund) instead.
 
-<a name="Payment.VoidAuthorizationArgs"></a>
-### Payment.VoidAuthorizationArgs
+<a name="Payment.VoidPreAuthorizeArgs"></a>
+### Payment.VoidPreAuthorizeArgs
 ```objc
-VoidAuthorizationArgs* args = [[VoidAuthorizationArgs alloc] init];
-args.transactionId = @"PreAuthorize.transactionId";
+DDPVoidPreAuthorizeArgs* args = [[DDPVoidPreAuthorizeArgs alloc] init];
+args.transactionId = nil;
 ```
 
 
@@ -205,11 +215,11 @@ Parameter   |   Type   | Required? | Default | Description
 transaction_id | string | Yes | None | the transaction id returned from the payment processor
 
 
-<a name="Payment.VoidAuthorization-Payment.FinishedAuthorizationVoid"></a>
-### Payment.FinishedAuthorizationVoid
+<a name="Payment.VoidPreAuthorize-Payment.VoidedPreAuthorize"></a>
+### Payment.VoidedPreAuthorize
 
 ```objc
-onFinishedAuthorizationVoid:^(FinishedAuthorizationVoid* response) {
+onVoidedPreAuthorize:^(DDPVoidedPreAuthorize* response) {
 }
 ```
 Response when an authorization void request is returned from the
@@ -221,9 +231,9 @@ Parameter   |   Type   | Required? | Default | Description
 
 ## VoidRefund
 ```objc
-[DotDashPayAPI.payment voidRefund:args onError:^(ErrorResponse* error) {
+[DotDashPayAPI.payment voidRefund:args onError:^(DDPErrorResponse* error) {
     // Handle error response
-} onFinishedVoidRefund:^(FinishedVoidRefund* response) {
+} onVoidedRefund:^(DDPVoidedRefund* response) {
     // Handle response
 }];
 ```
@@ -232,7 +242,7 @@ Parameter   |   Type   | Required? | Default | Description
 <a name="Payment.VoidRefundArgs"></a>
 ### Payment.VoidRefundArgs
 ```objc
-VoidRefundArgs* args = [[VoidRefundArgs alloc] init];
+DDPVoidRefundArgs* args = [[DDPVoidRefundArgs alloc] init];
 ```
 
 
@@ -240,11 +250,11 @@ Parameter   |   Type   | Required? | Default | Description
 ------------- | -------- | --------- | ------- | -----------
 
 
-<a name="Payment.VoidRefund-Payment.FinishedVoidRefund"></a>
-### Payment.FinishedVoidRefund
+<a name="Payment.VoidRefund-Payment.VoidedRefund"></a>
+### Payment.VoidedRefund
 
 ```objc
-onFinishedVoidRefund:^(FinishedVoidRefund* response) {
+onVoidedRefund:^(DDPVoidedRefund* response) {
 }
 ```
 
@@ -255,9 +265,9 @@ Parameter   |   Type   | Required? | Default | Description
 
 ## Refund
 ```objc
-[DotDashPayAPI.payment refund:args onError:^(ErrorResponse* error) {
+[DotDashPayAPI.payment refund:args onError:^(DDPErrorResponse* error) {
     // Handle error response
-} onFinishedRefund:^(FinishedRefund* response) {
+} onRefunded:^(DDPRefunded* response) {
     // Handle response
 }];
 ```
@@ -267,8 +277,8 @@ Refund a settled payment. You can only call this function
 <a name="Payment.RefundArgs"></a>
 ### Payment.RefundArgs
 ```objc
-RefundArgs* args = [[RefundArgs alloc] init];
-args.transactionId = @"Settle.transactionId";
+DDPRefundArgs* args = [[DDPRefundArgs alloc] init];
+args.transactionId = @"Settled.transactionId";
 ```
 
 
@@ -277,12 +287,12 @@ Parameter   |   Type   | Required? | Default | Description
 transaction_id | string | Yes | None | the transaction id returned from the payment processor
 
 
-<a name="Payment.Refund-Payment.FinishedRefund"></a>
-### Payment.FinishedRefund
+<a name="Payment.Refund-Payment.Refunded"></a>
+### Payment.Refunded
 
 ```objc
-onFinishedRefund:^(FinishedRefund* response) {
-    FinishedRefund_PaymentStatus status = response.status;  // status = FinishedRefund_PaymentStatus_Success (0)
+onRefunded:^(DDPRefunded* response) {
+    DDPRefunded_PaymentStatus status = response.status;  // status = DDPRefunded_PaymentStatus_Success (0)
     NSString* transactionId = response.transactionId;  // transactionId = @"txn-NG9jR86SC3hjzQHA8h5X3pwz"
     NSString* info = response.info;  // info = @"Refund was successful"
 }
@@ -296,20 +306,20 @@ transaction_id | string | Yes | None | a unique id that can be used to identify 
 info | string | Yes | None | a unique id that can be used to identify the refund
 
 
-## AdjustAuthorizationAmount
+## AdjustPreAuthorize
 ```objc
-[DotDashPayAPI.payment adjustAuthorizationAmount:args onError:^(ErrorResponse* error) {
+[DotDashPayAPI.payment adjustPreAuthorize:args onError:^(DDPErrorResponse* error) {
     // Handle error response
-} onFinishedAdjustAuthorizationAmount:^(FinishedAdjustAuthorizationAmount* response) {
+} onAdjustedPreAuthorize:^(DDPAdjustedPreAuthorize* response) {
     // Handle response
 }];
 ```
 
 
-<a name="Payment.AdjustAuthorizationAmountArgs"></a>
-### Payment.AdjustAuthorizationAmountArgs
+<a name="Payment.AdjustPreAuthorizeArgs"></a>
+### Payment.AdjustPreAuthorizeArgs
 ```objc
-AdjustAuthorizationAmountArgs* args = [[AdjustAuthorizationAmountArgs alloc] init];
+DDPAdjustPreAuthorizeArgs* args = [[DDPAdjustPreAuthorizeArgs alloc] init];
 ```
 
 
@@ -317,11 +327,11 @@ Parameter   |   Type   | Required? | Default | Description
 ------------- | -------- | --------- | ------- | -----------
 
 
-<a name="Payment.AdjustAuthorizationAmount-Payment.FinishedAdjustAuthorizationAmount"></a>
-### Payment.FinishedAdjustAuthorizationAmount
+<a name="Payment.AdjustPreAuthorize-Payment.AdjustedPreAuthorize"></a>
+### Payment.AdjustedPreAuthorize
 
 ```objc
-onFinishedAdjustAuthorizationAmount:^(FinishedAdjustAuthorizationAmount* response) {
+onAdjustedPreAuthorize:^(DDPAdjustedPreAuthorize* response) {
 }
 ```
 
@@ -330,20 +340,20 @@ Parameter   |   Type   | Required? | Default | Description
 ------------- | -------- | --------- | ------- | -----------
 
 
-## QueryCardBalance
+## GetCardBalance
 ```objc
-[DotDashPayAPI.payment queryCardBalance:args onError:^(ErrorResponse* error) {
+[DotDashPayAPI.payment getCardBalance:args onError:^(DDPErrorResponse* error) {
     // Handle error response
-} onCardBalance:^(CardBalance* response) {
+} onRetrievedCardBalance:^(DDPRetrievedCardBalance* response) {
     // Handle response
 }];
 ```
 
 
-<a name="Payment.QueryCardBalanceArgs"></a>
-### Payment.QueryCardBalanceArgs
+<a name="Payment.GetCardBalanceArgs"></a>
+### Payment.GetCardBalanceArgs
 ```objc
-QueryCardBalanceArgs* args = [[QueryCardBalanceArgs alloc] init];
+DDPGetCardBalanceArgs* args = [[DDPGetCardBalanceArgs alloc] init];
 ```
 
 
@@ -351,11 +361,11 @@ Parameter   |   Type   | Required? | Default | Description
 ------------- | -------- | --------- | ------- | -----------
 
 
-<a name="Payment.QueryCardBalance-Payment.CardBalance"></a>
-### Payment.CardBalance
+<a name="Payment.GetCardBalance-Payment.RetrievedCardBalance"></a>
+### Payment.RetrievedCardBalance
 
 ```objc
-onCardBalance:^(CardBalance* response) {
+onRetrievedCardBalance:^(DDPRetrievedCardBalance* response) {
 }
 ```
 
@@ -364,20 +374,20 @@ Parameter   |   Type   | Required? | Default | Description
 ------------- | -------- | --------- | ------- | -----------
 
 
-## CreateRecurringPayment
+## CreateRecurring
 ```objc
-[DotDashPayAPI.payment createRecurringPayment:args onError:^(ErrorResponse* error) {
+[DotDashPayAPI.payment createRecurring:args onError:^(DDPErrorResponse* error) {
     // Handle error response
-} onFinishedCreateRecurringPayment:^(FinishedCreateRecurringPayment* response) {
+} onCreatedRecurring:^(DDPCreatedRecurring* response) {
     // Handle response
 }];
 ```
 
 
-<a name="Payment.CreateRecurringPaymentArgs"></a>
-### Payment.CreateRecurringPaymentArgs
+<a name="Payment.CreateRecurringArgs"></a>
+### Payment.CreateRecurringArgs
 ```objc
-CreateRecurringPaymentArgs* args = [[CreateRecurringPaymentArgs alloc] init];
+DDPCreateRecurringArgs* args = [[DDPCreateRecurringArgs alloc] init];
 ```
 
 
@@ -385,11 +395,11 @@ Parameter   |   Type   | Required? | Default | Description
 ------------- | -------- | --------- | ------- | -----------
 
 
-<a name="Payment.CreateRecurringPayment-Payment.FinishedCreateRecurringPayment"></a>
-### Payment.FinishedCreateRecurringPayment
+<a name="Payment.CreateRecurring-Payment.CreatedRecurring"></a>
+### Payment.CreatedRecurring
 
 ```objc
-onFinishedCreateRecurringPayment:^(FinishedCreateRecurringPayment* response) {
+onCreatedRecurring:^(DDPCreatedRecurring* response) {
 }
 ```
 
@@ -398,20 +408,20 @@ Parameter   |   Type   | Required? | Default | Description
 ------------- | -------- | --------- | ------- | -----------
 
 
-## ConfigurePaymentProcessor
+## ConfigureProcessor
 ```objc
-[DotDashPayAPI.payment configurePaymentProcessor:args onError:^(ErrorResponse* error) {
+[DotDashPayAPI.payment configureProcessor:args onError:^(DDPErrorResponse* error) {
     // Handle error response
-} onFinishedConfigurePaymentProcessor:^(FinishedConfigurePaymentProcessor* response) {
+} onConfiguredProcessor:^(DDPConfiguredProcessor* response) {
     // Handle response
 }];
 ```
 
 
-<a name="Payment.ConfigurePaymentProcessorArgs"></a>
-### Payment.ConfigurePaymentProcessorArgs
+<a name="Payment.ConfigureProcessorArgs"></a>
+### Payment.ConfigureProcessorArgs
 ```objc
-ConfigurePaymentProcessorArgs* args = [[ConfigurePaymentProcessorArgs alloc] init];
+DDPConfigureProcessorArgs* args = [[DDPConfigureProcessorArgs alloc] init];
 ```
 
 
@@ -419,11 +429,11 @@ Parameter   |   Type   | Required? | Default | Description
 ------------- | -------- | --------- | ------- | -----------
 
 
-<a name="Payment.ConfigurePaymentProcessor-Payment.FinishedConfigurePaymentProcessor"></a>
-### Payment.FinishedConfigurePaymentProcessor
+<a name="Payment.ConfigureProcessor-Payment.ConfiguredProcessor"></a>
+### Payment.ConfiguredProcessor
 
 ```objc
-onFinishedConfigurePaymentProcessor:^(FinishedConfigurePaymentProcessor* response) {
+onConfiguredProcessor:^(DDPConfiguredProcessor* response) {
 }
 ```
 
@@ -432,36 +442,37 @@ Parameter   |   Type   | Required? | Default | Description
 ------------- | -------- | --------- | ------- | -----------
 
 
-## ListenForPaymentDataThenSettle
+## ReceivePaymentDataThenSettle
 ```objc
-[DotDashPayAPI.payment listenForPaymentDataThenSettle:args onError:^(ErrorResponse* error) {
+[DotDashPayAPI.payment receivePaymentDataThenSettle:args onError:^(DDPErrorResponse* error) {
     // Handle error response
-} onPaymentHardwareStartedRead:^(PaymentHardwareStartedRead* response) {
+} onStartedReceivingPaymentData:^(DDPStartedReceivingPaymentData* response) {
     // Handle response
-} onPaymentHardwareFinishedRead:^(PaymentHardwareFinishedRead* response) {
+} onReceivedPaymentData:^(DDPReceivedPaymentData* response) {
     // Handle response
-} onStartedSettlement:^(StartedSettlement* response) {
+} onStartedSettling:^(DDPStartedSettling* response) {
     // Handle response
-} onFinishedSettlement:^(FinishedSettlement* response) {
+} onSettled:^(DDPSettled* response) {
     // Handle response
 }];
 ```
 This is a convenience request that combines
-          [Hardware.ListenForPaymentData](#listenforpaymentdata) and
+          [Hardware.ReceivePaymentData](#receivepaymentdata) and
           [Payment.Settle](#settle) into a single request.
 
           Once a payer interacts with a payment peripheral, they are
           immediately charged for the amount specified in this
           request. Generally, this is quicker than calling
-          [Hardware.ListenForPaymentData](#listenforpaymentdata) followed by
+          [Hardware.ReceivePaymentData](#receivepaymentdata) followed by
           [Payment.Settle](#settle) yourself.
 
-<a name="Payment.ListenForPaymentDataThenSettleArgs"></a>
-### Payment.ListenForPaymentDataThenSettleArgs
+<a name="Payment.ReceivePaymentDataThenSettleArgs"></a>
+### Payment.ReceivePaymentDataThenSettleArgs
 ```objc
-ListenForPaymentDataThenSettleArgs* args = [[ListenForPaymentDataThenSettleArgs alloc] init];
+DDPReceivePaymentDataThenSettleArgs* args = [[DDPReceivePaymentDataThenSettleArgs alloc] init];
 args.dollars = 1;
 args.cents = 28;
+args.currency = @"USD";
 args.onlyNewData = NO;
 ```
 
@@ -470,32 +481,34 @@ Parameter   |   Type   | Required? | Default | Description
 ------------- | -------- | --------- | ------- | -----------
 dollars | uint32 | Yes | None | number of dollars to charge, the X in $X.Y
 cents | uint32 | No | 0 | number of cents to charge, the Y in $X.Y
+currency | string | No | "USD" | currency of the dollars and cents (only USD currently supported)
 only_new_data | bool | No | true | if true, then only return new data, e.g.  from a new magstripe      swipe or NFC touch, if false, then return new data OR recent data      from, e.g. a user swiping before being prompted.
 
 
-<a name="Payment.ListenForPaymentDataThenSettle-Hardware.PaymentHardwareStartedRead"></a>
-### Hardware.PaymentHardwareStartedRead
+<a name="Payment.ReceivePaymentDataThenSettle-Hardware.StartedReceivingPaymentData"></a>
+### Hardware.StartedReceivingPaymentData
 
 ```objc
-onPaymentHardwareStartedRead:^(PaymentHardwareStartedRead* response) {
+onStartedReceivingPaymentData:^(DDPStartedReceivingPaymentData* response) {
 }
 ```
-Response when the magnetic-stripe reader starts reading data from a
-  magnetic stripe card.
+Response when any payment peripheral begins receiving payment data
+  (e.g. when a magnetic-stripe reader starts reading data from a
+  magnetic stripe card).
 
 Parameter   |   Type   | Required? | Default | Description
 ------------- | -------- | --------- | ------- | -----------
 
 
-<a name="Payment.ListenForPaymentDataThenSettle-Hardware.PaymentHardwareFinishedRead"></a>
-### Hardware.PaymentHardwareFinishedRead
+<a name="Payment.ReceivePaymentDataThenSettle-Hardware.ReceivedPaymentData"></a>
+### Hardware.ReceivedPaymentData
 
 ```objc
-onPaymentHardwareFinishedRead:^(PaymentHardwareFinishedRead* response) {
-    NSString* payid = response.payid;  // payid = @"PaymentHardwareFinishedRead.payid"
+onReceivedPaymentData:^(DDPReceivedPaymentData* response) {
+    NSString* payid = response.payid;  // payid = @"ReceivedPaymentData.payid"
 }
 ```
-Response when the magnetic-stripe reader finishes reading data from
+Response when any payment peripheral finishes reading payment data from
   a magnetic stripe card.
 
 Parameter   |   Type   | Required? | Default | Description
@@ -503,12 +516,12 @@ Parameter   |   Type   | Required? | Default | Description
 payid | string | Yes | None | m
 
 
-<a name="Payment.ListenForPaymentDataThenSettle-Payment.StartedSettlement"></a>
-### Payment.StartedSettlement
+<a name="Payment.ReceivePaymentDataThenSettle-Payment.StartedSettling"></a>
+### Payment.StartedSettling
 
 ```objc
-onStartedSettlement:^(StartedSettlement* response) {
-    NSString* payid = response.payid;  // payid = @"PaymentHardwareFinishedRead.payid"
+onStartedSettling:^(DDPStartedSettling* response) {
+    NSString* payid = response.payid;  // payid = @"ReceivedPaymentData.payid"
 }
 ```
 Response when the settle payment initially starts settling the
@@ -519,13 +532,13 @@ Parameter   |   Type   | Required? | Default | Description
 payid | string | No | None | if applicable, the id from [Payment.PreAuthorize](#preauthorize) used to      settle the payment
 
 
-<a name="Payment.ListenForPaymentDataThenSettle-Payment.FinishedSettlement"></a>
-### Payment.FinishedSettlement
+<a name="Payment.ReceivePaymentDataThenSettle-Payment.Settled"></a>
+### Payment.Settled
 
 ```objc
-onFinishedSettlement:^(FinishedSettlement* response) {
-    NSString* payid = response.payid;  // payid = @"PaymentHardwareFinishedRead.payid"
-    FinishedSettlement_PaymentStatus status = response.status;  // status = FinishedSettlement_PaymentStatus_Success (0)
+onSettled:^(DDPSettled* response) {
+    NSString* payid = response.payid;  // payid = @"ReceivedPaymentData.payid"
+    DDPSettled_PaymentStatus status = response.status;  // status = DDPSettled_PaymentStatus_Success (0)
     NSString* transactionId = response.transactionId;  // transactionId = @"txn-NG9jR86SC3hjzQHA8h5X3pwz"
     NSString* info = response.info;  // info = @"Settlement finished successfully"
     NSString* customerId = response.customerId;  // customerId = @"2DAuJMBrMyaC"
@@ -535,6 +548,9 @@ onFinishedSettlement:^(FinishedSettlement* response) {
     BOOL commercial = response.commercial;  // commercial = NO
     BOOL debit = response.debit;  // debit = NO
     NSString* createdAt = response.createdAt;  // createdAt = @"915148799.75"
+    uint32_t dollars = response.dollars;  // dollars = 1
+    uint32_t cents = response.cents;  // cents = 28
+    NSString* currency = response.currency;  // currency = @"USD"
 }
 ```
 Response when the settle payment request returns from the payment
@@ -553,15 +569,18 @@ last4 | string | No | None | the last four digits of the card used (if applicabl
 commercial | bool | No | None | indicates whether the card is a commericial card (if      applicable/available)
 debit | bool | No | None | indicates whether the card is a debit card (if      applicable/available)
 created_at | string | No | None | indicates the time the settlement was created
+dollars | uint32 | No | None | number of dollars in the settlement, the X in $X.Y
+cents | uint32 | No | 0 | number of cents in the settlement, the Y in $X.Y
+currency | string | No | "USD" | currency of the dollars and cents
 
 
 # Hardware
 
 ## ConfigureHardware
 ```objc
-[DotDashPayAPI.hardware configureHardware:args onError:^(ErrorResponse* error) {
+[DotDashPayAPI.hardware configureHardware:args onError:^(DDPErrorResponse* error) {
     // Handle error response
-} onConfigureHardwareFinished:^(ConfigureHardwareFinished* response) {
+} onConfiguredHardware:^(DDPConfiguredHardware* response) {
     // Handle response
 }];
 ```
@@ -570,7 +589,7 @@ created_at | string | No | None | indicates the time the settlement was created
 <a name="Hardware.ConfigureHardwareArgs"></a>
 ### Hardware.ConfigureHardwareArgs
 ```objc
-ConfigureHardwareArgs* args = [[ConfigureHardwareArgs alloc] init];
+DDPConfigureHardwareArgs* args = [[DDPConfigureHardwareArgs alloc] init];
 ```
 
 
@@ -578,11 +597,11 @@ Parameter   |   Type   | Required? | Default | Description
 ------------- | -------- | --------- | ------- | -----------
 
 
-<a name="Hardware.ConfigureHardware-Hardware.ConfigureHardwareFinished"></a>
-### Hardware.ConfigureHardwareFinished
+<a name="Hardware.ConfigureHardware-Hardware.ConfiguredHardware"></a>
+### Hardware.ConfiguredHardware
 
 ```objc
-onConfigureHardwareFinished:^(ConfigureHardwareFinished* response) {
+onConfiguredHardware:^(DDPConfiguredHardware* response) {
 }
 ```
 
@@ -591,24 +610,24 @@ Parameter   |   Type   | Required? | Default | Description
 ------------- | -------- | --------- | ------- | -----------
 
 
-## ListenForPaymentData
+## ReceivePaymentData
 ```objc
-[DotDashPayAPI.hardware listenForPaymentData:args onError:^(ErrorResponse* error) {
+[DotDashPayAPI.hardware receivePaymentData:args onError:^(DDPErrorResponse* error) {
     // Handle error response
-} onPaymentHardwareStartedRead:^(PaymentHardwareStartedRead* response) {
+} onStartedReceivingPaymentData:^(DDPStartedReceivingPaymentData* response) {
     // Handle response
-} onPaymentHardwareFinishedRead:^(PaymentHardwareFinishedRead* response) {
+} onReceivedPaymentData:^(DDPReceivedPaymentData* response) {
     // Handle response
 }];
 ```
 Listen for payment data from the payment peripheral hardware
           connected to the @@ddp-hardware-module-name@@.
 
-<a name="Hardware.ListenForPaymentDataArgs"></a>
-### Hardware.ListenForPaymentDataArgs
+<a name="Hardware.ReceivePaymentDataArgs"></a>
+### Hardware.ReceivePaymentDataArgs
 ```objc
-ListenForPaymentDataArgs* args = [[ListenForPaymentDataArgs alloc] init];
-[args.paymentHardwareArray addValue:ListenForPaymentDataArgs_PaymentHardwareType_Msr];
+DDPReceivePaymentDataArgs* args = [[DDPReceivePaymentDataArgs alloc] init];
+[args.paymentHardwareArray addValue:DDPReceivePaymentDataArgs_PaymentHardwareType_Msr];
 args.useExistingData = NO;
 args.useExistingDataSecondsWindow = 0;
 ```
@@ -616,32 +635,33 @@ args.useExistingDataSecondsWindow = 0;
 
 Parameter   |   Type   | Required? | Default | Description
 ------------- | -------- | --------- | ------- | -----------
-payment_hardware | PaymentHardwareType [Array] | No | None | payment_hardware is used to define which payment hardware we      should be listening to
+payment_hardware | PaymentHardwareType [Array] | No | None | payment_hardware is used to define which payment hardware we      should be receiving from
 
 
-<a name="Hardware.ListenForPaymentData-Hardware.PaymentHardwareStartedRead"></a>
-### Hardware.PaymentHardwareStartedRead
+<a name="Hardware.ReceivePaymentData-Hardware.StartedReceivingPaymentData"></a>
+### Hardware.StartedReceivingPaymentData
 
 ```objc
-onPaymentHardwareStartedRead:^(PaymentHardwareStartedRead* response) {
+onStartedReceivingPaymentData:^(DDPStartedReceivingPaymentData* response) {
 }
 ```
-Response when the magnetic-stripe reader starts reading data from a
-  magnetic stripe card.
+Response when any payment peripheral begins receiving payment data
+  (e.g. when a magnetic-stripe reader starts reading data from a
+  magnetic stripe card).
 
 Parameter   |   Type   | Required? | Default | Description
 ------------- | -------- | --------- | ------- | -----------
 
 
-<a name="Hardware.ListenForPaymentData-Hardware.PaymentHardwareFinishedRead"></a>
-### Hardware.PaymentHardwareFinishedRead
+<a name="Hardware.ReceivePaymentData-Hardware.ReceivedPaymentData"></a>
+### Hardware.ReceivedPaymentData
 
 ```objc
-onPaymentHardwareFinishedRead:^(PaymentHardwareFinishedRead* response) {
-    NSString* payid = response.payid;  // payid = @"PaymentHardwareFinishedRead.payid"
+onReceivedPaymentData:^(DDPReceivedPaymentData* response) {
+    NSString* payid = response.payid;  // payid = @"ReceivedPaymentData.payid"
 }
 ```
-Response when the magnetic-stripe reader finishes reading data from
+Response when any payment peripheral finishes reading payment data from
   a magnetic stripe card.
 
 Parameter   |   Type   | Required? | Default | Description
@@ -649,21 +669,21 @@ Parameter   |   Type   | Required? | Default | Description
 payid | string | Yes | None | m
 
 
-## GetAPIConnectionStatus
+## GetDatalinkStatus
 ```objc
-[DotDashPayAPI.hardware getAPIConnectionStatus:args onError:^(ErrorResponse* error) {
+[DotDashPayAPI.hardware getDatalinkStatus:args onError:^(DDPErrorResponse* error) {
     // Handle error response
-} onAPIConnectionStatus:^(APIConnectionStatus* response) {
+} onRetrievedDatalinkStatus:^(DDPRetrievedDatalinkStatus* response) {
     // Handle response
 }];
 ```
 Checks the status of the connection between the API and the
           DotDashPay @@ddp-hardware-module-name@@.
 
-<a name="Hardware.GetAPIConnectionStatusArgs"></a>
-### Hardware.GetAPIConnectionStatusArgs
+<a name="Hardware.GetDatalinkStatusArgs"></a>
+### Hardware.GetDatalinkStatusArgs
 ```objc
-GetAPIConnectionStatusArgs* args = [[GetAPIConnectionStatusArgs alloc] init];
+DDPGetDatalinkStatusArgs* args = [[DDPGetDatalinkStatusArgs alloc] init];
 ```
 
 
@@ -671,16 +691,16 @@ Parameter   |   Type   | Required? | Default | Description
 ------------- | -------- | --------- | ------- | -----------
 
 
-<a name="Hardware.GetAPIConnectionStatus-Hardware.APIConnectionStatus"></a>
-### Hardware.APIConnectionStatus
+<a name="Hardware.GetDatalinkStatus-Hardware.RetrievedDatalinkStatus"></a>
+### Hardware.RetrievedDatalinkStatus
 
 ```objc
-onAPIConnectionStatus:^(APIConnectionStatus* response) {
-    APIConnectionStatus_Status status = response.status;  // status = APIConnectionStatus_Status_Success (0)
+onRetrievedDatalinkStatus:^(DDPRetrievedDatalinkStatus* response) {
+    DDPRetrievedDatalinkStatus_Status status = response.status;  // status = DDPRetrievedDatalinkStatus_Status_Success (0)
     NSString* info = response.info;  // info = @"API is connected"
 }
 ```
-APIConnectionStatus contains information related to the status of
+RetrievedDatalinkStatus contains information related to the status of
   the connection between the API and the @@ddp-hardware-module-name@@.
 
 Parameter   |   Type   | Required? | Default | Description
@@ -689,21 +709,21 @@ status | Status | Yes | None | m
 info | string | Yes | None | m
 
 
-## GetInternetConnectionStatus
+## GetInternetStatus
 ```objc
-[DotDashPayAPI.hardware getInternetConnectionStatus:args onError:^(ErrorResponse* error) {
+[DotDashPayAPI.hardware getInternetStatus:args onError:^(DDPErrorResponse* error) {
     // Handle error response
-} onInternetConnectionStatus:^(InternetConnectionStatus* response) {
+} onRetrievedInternetStatus:^(DDPRetrievedInternetStatus* response) {
     // Handle response
 }];
 ```
 Returns the status of the DotDashPay
           @@ddp-hardware-module-name@@'s connection to the Internet.
 
-<a name="Hardware.GetInternetConnectionStatusArgs"></a>
-### Hardware.GetInternetConnectionStatusArgs
+<a name="Hardware.GetInternetStatusArgs"></a>
+### Hardware.GetInternetStatusArgs
 ```objc
-GetInternetConnectionStatusArgs* args = [[GetInternetConnectionStatusArgs alloc] init];
+DDPGetInternetStatusArgs* args = [[DDPGetInternetStatusArgs alloc] init];
 ```
 
 
@@ -711,16 +731,16 @@ Parameter   |   Type   | Required? | Default | Description
 ------------- | -------- | --------- | ------- | -----------
 
 
-<a name="Hardware.GetInternetConnectionStatus-Hardware.InternetConnectionStatus"></a>
-### Hardware.InternetConnectionStatus
+<a name="Hardware.GetInternetStatus-Hardware.RetrievedInternetStatus"></a>
+### Hardware.RetrievedInternetStatus
 
 ```objc
-onInternetConnectionStatus:^(InternetConnectionStatus* response) {
-    InternetConnectionStatus_Status status = response.status;  // status = InternetConnectionStatus_Status_Success (0)
+onRetrievedInternetStatus:^(DDPRetrievedInternetStatus* response) {
+    DDPRetrievedInternetStatus_Status status = response.status;  // status = DDPRetrievedInternetStatus_Status_Success (0)
     NSString* info = response.info;  // info = @"Internet is connected"
 }
 ```
-InternetConnectionStatus contains information related to the status
+RetrievedInternetStatus contains information related to the status
   of the @@ddp-hardware-module-name@@'s connection to the Internet
   (which is required to process payments in 'Online' mode).
 
@@ -732,9 +752,9 @@ info | string | Yes | None | m
 
 ## ConfigureWifi
 ```objc
-[DotDashPayAPI.hardware configureWifi:args onError:^(ErrorResponse* error) {
+[DotDashPayAPI.hardware configureWifi:args onError:^(DDPErrorResponse* error) {
     // Handle error response
-} onConfigureWifiFinished:^(ConfigureWifiFinished* response) {
+} onConfiguredWifi:^(DDPConfiguredWifi* response) {
     // Handle response
 }];
 ```
@@ -743,7 +763,7 @@ info | string | Yes | None | m
 <a name="Hardware.ConfigureWifiArgs"></a>
 ### Hardware.ConfigureWifiArgs
 ```objc
-ConfigureWifiArgs* args = [[ConfigureWifiArgs alloc] init];
+DDPConfigureWifiArgs* args = [[DDPConfigureWifiArgs alloc] init];
 ```
 
 
@@ -751,11 +771,11 @@ Parameter   |   Type   | Required? | Default | Description
 ------------- | -------- | --------- | ------- | -----------
 
 
-<a name="Hardware.ConfigureWifi-Hardware.ConfigureWifiFinished"></a>
-### Hardware.ConfigureWifiFinished
+<a name="Hardware.ConfigureWifi-Hardware.ConfiguredWifi"></a>
+### Hardware.ConfiguredWifi
 
 ```objc
-onConfigureWifiFinished:^(ConfigureWifiFinished* response) {
+onConfiguredWifi:^(DDPConfiguredWifi* response) {
 }
 ```
 
@@ -766,9 +786,9 @@ Parameter   |   Type   | Required? | Default | Description
 
 ## ConfigureEthernet
 ```objc
-[DotDashPayAPI.hardware configureEthernet:args onError:^(ErrorResponse* error) {
+[DotDashPayAPI.hardware configureEthernet:args onError:^(DDPErrorResponse* error) {
     // Handle error response
-} onConfigureEthernetFinished:^(ConfigureEthernetFinished* response) {
+} onConfiguredEthernet:^(DDPConfiguredEthernet* response) {
     // Handle response
 }];
 ```
@@ -777,7 +797,7 @@ Parameter   |   Type   | Required? | Default | Description
 <a name="Hardware.ConfigureEthernetArgs"></a>
 ### Hardware.ConfigureEthernetArgs
 ```objc
-ConfigureEthernetArgs* args = [[ConfigureEthernetArgs alloc] init];
+DDPConfigureEthernetArgs* args = [[DDPConfigureEthernetArgs alloc] init];
 ```
 
 
@@ -785,11 +805,11 @@ Parameter   |   Type   | Required? | Default | Description
 ------------- | -------- | --------- | ------- | -----------
 
 
-<a name="Hardware.ConfigureEthernet-Hardware.ConfigureEthernetFinished"></a>
-### Hardware.ConfigureEthernetFinished
+<a name="Hardware.ConfigureEthernet-Hardware.ConfiguredEthernet"></a>
+### Hardware.ConfiguredEthernet
 
 ```objc
-onConfigureEthernetFinished:^(ConfigureEthernetFinished* response) {
+onConfiguredEthernet:^(DDPConfiguredEthernet* response) {
 }
 ```
 
@@ -798,21 +818,21 @@ Parameter   |   Type   | Required? | Default | Description
 ------------- | -------- | --------- | ------- | -----------
 
 
-## ListConnectedPeripherals
+## GetConnectedPeripherals
 ```objc
-[DotDashPayAPI.hardware listConnectedPeripherals:args onError:^(ErrorResponse* error) {
+[DotDashPayAPI.hardware getConnectedPeripherals:args onError:^(DDPErrorResponse* error) {
     // Handle error response
-} onConnectedPeripheralsList:^(ConnectedPeripheralsList* response) {
+} onRetrievedConnectedPeripherals:^(DDPRetrievedConnectedPeripherals* response) {
     // Handle response
 }];
 ```
 Returns a list of all attached hardware peripherals to the
           DotDashPay @@ddp-hardware-module-name@@.
 
-<a name="Hardware.ListConnectedPeripheralsArgs"></a>
-### Hardware.ListConnectedPeripheralsArgs
+<a name="Hardware.GetConnectedPeripheralsArgs"></a>
+### Hardware.GetConnectedPeripheralsArgs
 ```objc
-ListConnectedPeripheralsArgs* args = [[ListConnectedPeripheralsArgs alloc] init];
+DDPGetConnectedPeripheralsArgs* args = [[DDPGetConnectedPeripheralsArgs alloc] init];
 ```
 
 
@@ -820,11 +840,11 @@ Parameter   |   Type   | Required? | Default | Description
 ------------- | -------- | --------- | ------- | -----------
 
 
-<a name="Hardware.ListConnectedPeripherals-Hardware.ConnectedPeripheralsList"></a>
-### Hardware.ConnectedPeripheralsList
+<a name="Hardware.GetConnectedPeripherals-Hardware.RetrievedConnectedPeripherals"></a>
+### Hardware.RetrievedConnectedPeripherals
 
 ```objc
-onConnectedPeripheralsList:^(ConnectedPeripheralsList* response) {
+onRetrievedConnectedPeripherals:^(DDPRetrievedConnectedPeripherals* response) {
     NSArray* attachedValidPeriphs = response.attachedValidPeriphsArray;  // attachedValidPeriphs = @[@"MagTekSureSwipe21040145", ...]
     NSArray* attachedErrorPeriphs = response.attachedErrorPeriphsArray;  // attachedErrorPeriphs = @[@""]
 }
@@ -842,9 +862,9 @@ attached_error_periphs | string [Array] | No | None | m
 
 ## Configure
 ```objc
-[DotDashPayAPI.global configure:args onError:^(ErrorResponse* error) {
+[DotDashPayAPI.global configure:args onError:^(DDPErrorResponse* error) {
     // Handle error response
-} onGlobalConfigurationStatus:^(GlobalConfigurationStatus* response) {
+} onConfigured:^(DDPConfigured* response) {
     // Handle response
 }];
 ```
@@ -870,7 +890,7 @@ This function sets up the connection to the DotDashPay
 <a name="Global.ConfigureArgs"></a>
 ### Global.ConfigureArgs
 ```objc
-ConfigureArgs* args = [[ConfigureArgs alloc] init];
+DDPConfigureArgs* args = [[DDPConfigureArgs alloc] init];
 args.simulate = YES;
 args.testing = YES;
 ```
@@ -882,16 +902,16 @@ simulate | bool | No | true | Whether the DotDashPay simulator should be used.
 testing | bool | No | true | Whether to use sandboxed payment processing.
 
 
-<a name="Global.Configure-Global.GlobalConfigurationStatus"></a>
-### Global.GlobalConfigurationStatus
+<a name="Global.Configure-Global.Configured"></a>
+### Global.Configured
 
 ```objc
-onGlobalConfigurationStatus:^(GlobalConfigurationStatus* response) {
-    GlobalConfigurationStatus_Status status = response.status;  // status = GlobalConfigurationStatus_Status_Success (0)
+onConfigured:^(DDPConfigured* response) {
+    DDPConfigured_Status status = response.status;  // status = DDPConfigured_Status_Success (0)
     NSString* info = response.info;  // info = @"Global configuration succeeded"
 }
 ```
-GlobalConfigurationStatus contains information about the status of
+Configured contains information about the status of
   the API and the @@ddp-hardware-module-name@@'s current configuration
   status.
 
